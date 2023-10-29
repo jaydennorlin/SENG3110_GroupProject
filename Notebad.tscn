@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=3 uid="uid://btvwq336f2b08"]
+
+[ext_resource type="Script" path="res://Scripts/NotepadTest.cs" id="1_c2a24"]
+
+[node name="Notebad" type="Control" node_paths=PackedStringArray("openFileButton", "saveFileButton", "textArea")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_c2a24")
+openFileButton = NodePath("VBoxContainer/HBoxContainer/OpenFileButton")
+saveFileButton = NodePath("VBoxContainer/HBoxContainer/Button")
+textArea = NodePath("VBoxContainer/TextEdit")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+
+[node name="OpenFileButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Open File"
+
+[node name="Button" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Save File"
+
+[node name="TextEdit" type="TextEdit" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+placeholder_text = "Placeholder Text Placeholder Text Placeholder TextPlaceholder TextPlaceholder TextPlaceholder TextPlaceholder TextPlaceholder TextPlaceholder TextPlaceholder TextPlaceholder TextPlaceholder Text"
+wrap_mode = 1
