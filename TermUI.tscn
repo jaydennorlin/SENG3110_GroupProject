@@ -31,28 +31,477 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="ScrollContainer_SelectTerm" type="ScrollContainer" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="ScrollContainer_SelectTerm" type="ScrollContainer" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(186, 0)
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
 vertical_scroll_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/ScrollContainer_SelectTerm"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/ScrollContainer_SelectTerm"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="ExampleButton" type="Button" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/ScrollContainer_SelectTerm/VBoxContainer"]
+[node name="ExampleButton" type="Button" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/ScrollContainer_SelectTerm/VBoxContainer"]
 layout_mode = 2
 text = "Example Course"
 alignment = 0
 
-[node name="ExampleButton2" type="Button" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/ScrollContainer_SelectTerm/VBoxContainer"]
+[node name="ExampleButton2" type="Button" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/ScrollContainer_SelectTerm/VBoxContainer"]
 layout_mode = 2
 text = "Example Course 2"
 alignment = 0
 
-[node name="Control" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TextEdit" type="TextEdit" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+placeholder_text = "Replace with Course/Professor Information later."
+wrap_mode = 1
+
+[node name="Assignment" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 4.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Assignment"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Assignment/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Task Name
+Course Name
+Due Date (Hyperlink?)"
+
+[node name="TextEdit" type="TextEdit" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Assignment/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+placeholder_text = "Asignment Info"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Assignment/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Button" type="Button" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Assignment/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Example Task"
+
+[node name="Button3" type="Button" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Assignment/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Example Task"
+
+[node name="Button4" type="Button" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Assignment/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Example Task"
+
+[node name="Button2" type="Button" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Assignment/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Example Task"
+
+[node name="Calendar" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+vertical_scroll_mode = 2
+
+[node name="Month" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Month"
+
+[node name="GridContainer" type="GridContainer" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+columns = 7
+
+[node name="Sunday" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Sun"
+
+[node name="Monday" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Mon"
+
+[node name="Tuesday" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Tue"
+
+[node name="Wednesday" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Wed"
+
+[node name="Thursday" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Thu"
+
+[node name="Friday" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Fri"
+
+[node name="Saturdau" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Sat"
+
+[node name="Date" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "1.
+
+- Task Name"
+
+[node name="Date2" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "2.
+"
+
+[node name="Date3" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "3
+"
+
+[node name="Date4" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date4"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date4"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "4
+
+- Task Name"
+
+[node name="Date5" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date5"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date5"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "5"
+
+[node name="Date6" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date6"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date6"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "6"
+
+[node name="Date7" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date7"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date7"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "7"
+
+[node name="Date8" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date8"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date8"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "8"
+
+[node name="Date9" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date9"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date9"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "9"
+
+[node name="Date10" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date10"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date10"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "10
+
+- Task Name"
+
+[node name="Date11" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date11"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date11"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "11"
+
+[node name="Date12" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date12"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date12"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "12"
+
+[node name="Date13" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date13"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date13"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "13"
+
+[node name="Date14" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date14"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date14"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "14"
