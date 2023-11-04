@@ -22,7 +22,10 @@ public partial class Tester : Node
 	[Export] RichTextLabel taskInfoLabel;
 	[Export] TextEdit taskDescriptionArea;
 
-	Term activeTerm;
+	[Export] Tree coursesTree;
+    TreeItem treeRoot;
+
+    Term activeTerm;
 
 	//Tabs can either be a Course or a Task.
 	struct TabItem
@@ -40,12 +43,13 @@ public partial class Tester : Node
 		}
 	}
 
-	TabItem[] openTabs;
+	List<TabItem> openTabs = new List<TabItem>();
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
-		activeTerm = new Term();
+        #region Generation of Testing Data. 
+        activeTerm = new Term();
 		activeTerm.termName = "Example Term 20XX";
 
 		Course exampleCourse = new Course("EXCO 1100", "Example data wabababababababababababababababa");
@@ -61,55 +65,112 @@ public partial class Tester : Node
         exampleCourse.tasks.Add(new PrimaryTask("Example Mission", exampleCourse));
 
         activeTerm.courses.Add(exampleCourse);
+        #endregion
+        //Load selected term here
 
-		UpdateTermDisplay();
-    }
+        //Formatting makes it larger, bold, and centered.
+        termNameLabel.Text = "[font_size=20][b][center]" + activeTerm.termName;
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-
-	}
-
-	public void UpdateTermDisplay()
-	{
-		//Formatting makes it larger, bold, and centered.
-		termNameLabel.Text = "[font_size=20][b][center]" + activeTerm.termName;
-
-		List<TabItem> allTabs = new List<TabItem>();
-
-		for (int i = 0; i < activeTerm.courses.Count; i++)
+        for (int i = 0; i < activeTerm.courses.Count; i++)
 		{
-			//Generate the folder structure for each course.
-
-			//Temporary solution: Open all tabs.
-			allTabs.Add(new TabItem(false, null, activeTerm.courses[i]));
-
-			for (int j = 0; j < activeTerm.courses[i].tasks.Count; j++)
-			{
-                allTabs.Add(new TabItem(true, activeTerm.courses[i].tasks[j], null));
-            }
+			AddCourseToUI(activeTerm.courses[i]);
         }
 
-		openTabs = allTabs.ToArray();
-
-		tabBar.ClearTabs();
-
-		for (int i = 0; i < allTabs.Count; i++)
-		{
-			if (allTabs[i].isTask)
-			{
-				tabBar.AddTab(allTabs[i].task.taskName);
-            }
-			else
-			{
-                tabBar.AddTab(allTabs[i].course.courseName);
-            }
-        }
+		coursesTree.CellSelected += AddTabFromTree;
 
         tabBar.TabChanged += UpdateMainDisplay;
+		tabBar.TabClosePressed += TabRemoved;
 
-		UpdateMainDisplay(0);
+        UpdateOpenTabs();
+    }
+
+    #region Initialization
+    public void AddCourseToUI(Course course)
+    {
+        if (treeRoot == null)
+        {
+            treeRoot = coursesTree.CreateItem();
+        }
+
+        TreeItem courseTreeItem = coursesTree.CreateItem(treeRoot);
+        courseTreeItem.SetText(0, course.courseName);
+
+        for (int i = 0; i < course.tasks.Count; i++)
+        {
+            TreeItem item = coursesTree.CreateItem(courseTreeItem);
+            item.SetText(0, course.tasks[i].taskName);
+        }
+    }
+    #endregion
+
+    // Called every frame. 'delta' is the elapsed time since the previous frame.
+    public override void _Process(double delta)
+	{
+		//Save once every few frames?
+	}
+
+    //Consider using MouseButtonInde to bring up a context menu that lets you create a new task/course?
+    private void AddTabFromTree()
+    {
+        TreeItem selecteditem = coursesTree.GetSelected();
+
+        if (selecteditem != null)
+        {
+            TabItem createdItem;
+
+            //Courses are childed to the root of the tree, so the selected TreeItem must be a course.
+            if (selecteditem.GetParent() == treeRoot)
+            {
+                createdItem = new TabItem(false, null, activeTerm.courses[selecteditem.GetIndex()]);
+            }
+            else
+            {
+                createdItem = new TabItem(true, activeTerm.courses[selecteditem.GetParent().GetIndex()].tasks[selecteditem.GetIndex()], null);
+            }
+
+            int alreadyExists = openTabs.IndexOf(createdItem);
+
+            if (alreadyExists == -1)
+            {
+                openTabs.Add(createdItem);
+                UpdateOpenTabs();
+                tabBar.CurrentTab = openTabs.Count - 1;
+            }
+            else
+            {
+                UpdateOpenTabs();
+                tabBar.CurrentTab = alreadyExists;
+            }
+        }
+
+        UpdateMainDisplay(tabBar.CurrentTab);
+    }
+
+    private void TabRemoved(long tab)
+    {
+        openTabs.RemoveAt((int)tab);
+
+        UpdateOpenTabs();
+    }
+
+    public void UpdateOpenTabs()
+	{
+        tabBar.ClearTabs();
+
+		if(openTabs.Count != 0)
+		{
+            for (int i = 0; i < openTabs.Count; i++)
+            {
+                if (openTabs[i].isTask)
+                {
+                    tabBar.AddTab(openTabs[i].task.taskName);
+                }
+                else
+                {
+                    tabBar.AddTab(openTabs[i].course.courseName);
+                }
+            }
+        }
     }
 
 	//No idea why, but Godot always seems to use the largest datatype available, even when it's totally unreasonable to.
@@ -117,19 +178,19 @@ public partial class Tester : Node
 	//Who is ever going to need 9,223,372,036,854,775,807 tabs?
 	private void UpdateMainDisplay(long selectedTab)
     {
-		if (openTabs[selectedTab].isTask)
+		if (openTabs[(int)selectedTab].isTask)
 		{
 			courseParentNode.Visible = false;
             taskParentNode.Visible = true;
 
-            UpdateTaskDisplay(openTabs[selectedTab].task);
+            UpdateTaskDisplay(openTabs[(int)selectedTab].task);
 		}
 		else
 		{
             courseParentNode.Visible = true;
             taskParentNode.Visible = false;
 
-            UpdateCourseDisplay(openTabs[selectedTab].course);
+            UpdateCourseDisplay(openTabs[(int)selectedTab].course);
         }
     }
 
