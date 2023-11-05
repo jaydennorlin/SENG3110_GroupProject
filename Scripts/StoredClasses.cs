@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
-namespace AssignmentTracker
-{
-    public class Term
-    {
+namespace AssignmentTracker {
+    public class Term {
         public string termName;
         //Add start/end date.
+        public DateTime startDate;
+        public DateTime endDate;
+
         public string directory;
 
         //Investigate other means of storing this.
@@ -26,7 +27,7 @@ namespace AssignmentTracker
         {
             Term toReturn = JsonSerializer.Deserialize<Term>(directory);
 
-            if(toReturn == null)
+            if (toReturn == null)
             {
                 //Throw some error or something.
             }
@@ -35,14 +36,15 @@ namespace AssignmentTracker
         }
     }
 
-    public class Course
-    {
+    public class Course {
         //Consider adding an additional variable, "Course Code" or something like that.
         //So we can refer to the couse either by it's fill name (ex "Algorithms and Data Structures") or by its Code (ex "SENG 4530)
         public string courseName;
         //Consider making this some sort of two-part string.
         //First part is the type of data being stored (Professor Name, Phone Number, etc), second part is the actual data.
         public string[] additonalData;
+
+
 
         public List<PrimaryTask> tasks = new List<PrimaryTask>();
 
@@ -51,20 +53,25 @@ namespace AssignmentTracker
             this.courseName = courseName;
             this.additonalData = new string[] { addData };
         }
-     }
+    }
 
-    public class TaskBase
-    {
+    public class TaskBase {
         public string taskDescription;
+
+        //Task Type could be Quiz, Midterm, Aiisgments, Project or Others
+        //You may want to implement this by 
+        public string taskType;
+
+        //Add due date.
+        public DateTime dueDate;
+
 
         //Two way connection, so a task alone knows what course its part of.
         public Course course;
     }
 
-    public class PrimaryTask : TaskBase
-    {
+    public class PrimaryTask : TaskBase {
         public string taskName;
-        //Add due date.
 
         public List<TaskBase> subtasks = new List<TaskBase>();
 
@@ -75,8 +82,9 @@ namespace AssignmentTracker
         }
     }
 
-    public class Subtask : TaskBase
-    {
+    public class Subtask : TaskBase {
+        //Have primary task to look up. Do we need this one?
+        public PrimaryTask primaryTask;
 
     }
 }
