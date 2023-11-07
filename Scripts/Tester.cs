@@ -14,15 +14,21 @@ public partial class Tester : Node
 
 	[ExportGroup("Course Fields")]
 	[Export] Control courseParentNode;
-    [Export] RichTextLabel courseNameLabel;
+    [Export] LabelEdit courseNameLabelEdit;
     [Export] TextEdit courseInfoArea;
 
     [ExportGroup("Task Fields")]
     [Export] Control taskParentNode;
+    [Export] LabelEdit taskTitleLabelEdit;
 	[Export] RichTextLabel taskInfoLabel;
 	[Export] TextEdit taskDescriptionArea;
 
-	[Export] Tree coursesTree;
+    [ExportGroup("Secondary Display")]
+    [Export] TabBar secondaryTabBar;
+    [Export] Control calendarNode;
+    [Export] Control upcomingAssignmentsNode;
+
+    [Export] Tree coursesTree;
     TreeItem treeRoot;
 
     Term activeTerm;
@@ -73,13 +79,25 @@ public partial class Tester : Node
 
         for (int i = 0; i < activeTerm.courses.Count; i++)
 		{
-			AddCourseToUI(activeTerm.courses[i]);
+			AddCourseToTree(activeTerm.courses[i]);
         }
 
-		coursesTree.CellSelected += AddTabFromTree;
+		coursesTree.CellSelected += Course_AddToTabBar;
 
         tabBar.TabChanged += UpdateMainDisplay;
 		tabBar.TabClosePressed += TabRemoved;
+
+        //Course Events
+        courseNameLabelEdit.EditComplete += Course_UpdateTitle;
+        courseInfoArea.TextChanged += Course_UpdateDescription;
+
+        //Task Events
+        taskTitleLabelEdit.EditComplete += Task_UpdateTitle;
+        taskDescriptionArea.TextChanged += Task_UpdateDescription;
+
+        //Secondary Display Events
+        secondaryTabBar.TabChanged += UpdateSecondaryDisplay;
+        UpdateSecondaryDisplay(0);
 
         UpdateOpenTabs();
 
@@ -106,7 +124,7 @@ public partial class Tester : Node
     }
 
     #region Initialization
-    public void AddCourseToUI(Course course)
+    public void AddCourseToTree(Course course)
     {
         if (treeRoot == null)
         {
@@ -122,6 +140,18 @@ public partial class Tester : Node
             item.SetText(0, course.tasks[i].taskName);
         }
     }
+
+    public void UpdateTree()
+    {
+        for (int i = 0; i < activeTerm.courses.Count; i++)
+        {
+            treeRoot.GetChild(i).SetText(0, activeTerm.courses[i].courseName);
+            for (int j = 0; j < activeTerm.courses[i].tasks.Count; j++)
+            {
+                treeRoot.GetChild(i).GetChild(j).SetText(0, activeTerm.courses[i].tasks[j].taskName);
+            }
+        }
+    }
     #endregion
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -131,7 +161,7 @@ public partial class Tester : Node
 	}
 
     //Consider using MouseButtonInde to bring up a context menu that lets you create a new task/course?
-    private void AddTabFromTree()
+    private void Course_AddToTabBar()
     {
         TreeItem selecteditem = coursesTree.GetSelected();
 
@@ -159,12 +189,9 @@ public partial class Tester : Node
             }
             else
             {
-                UpdateOpenTabs();
                 tabBar.CurrentTab = alreadyExists;
             }
         }
-
-        UpdateMainDisplay(tabBar.CurrentTab);
     }
 
     private void TabRemoved(long tab)
@@ -199,38 +226,81 @@ public partial class Tester : Node
 	//Who is ever going to need 9,223,372,036,854,775,807 tabs?
 	private void UpdateMainDisplay(long selectedTab)
     {
+        GD.Print("Update Main Display to tab " + selectedTab);
 		if (openTabs[(int)selectedTab].isTask)
 		{
 			courseParentNode.Visible = false;
             taskParentNode.Visible = true;
 
-            UpdateTaskDisplay(openTabs[(int)selectedTab].task);
+            Task_UpdateDisplay(openTabs[(int)selectedTab].task);
 		}
 		else
 		{
             courseParentNode.Visible = true;
             taskParentNode.Visible = false;
 
-            UpdateCourseDisplay(openTabs[(int)selectedTab].course);
+            Course_UpdateDisplay(openTabs[(int)selectedTab].course);
         }
+
+        //Cancel all current open label edits.
+        taskTitleLabelEdit.CancelEdit();
     }
 
-	public void UpdateCourseDisplay(Course course)
+    public void Course_UpdateDisplay(Course course)
 	{
-		courseNameLabel.Text = course.courseName;
+		courseNameLabelEdit.Text = course.courseName;
 
 		//Rework this later to use the entire array. Or change it to just be a single string.
 		courseInfoArea.Text = course.additonalData[0];
 	}
 
+    private void Course_UpdateTitle()
+    {
+        openTabs[tabBar.CurrentTab].course.courseName = courseNameLabelEdit.Text;
 
-	public void UpdateTaskDisplay(PrimaryTask task)
+        UpdateTree();
+    }
+
+    private void Course_UpdateDescription()
+    {
+        openTabs[tabBar.CurrentTab].course.additonalData[0] = courseInfoArea.Text;
+    }
+
+    public void Task_UpdateDisplay(PrimaryTask task)
 	{
-		//Don't forget to add Due Date to this line.
-		taskInfoLabel.Text = "[b]" + task.taskName + "[\\b]\n" + task.course.courseName + "\n";
+        taskTitleLabelEdit.Text = task.taskName;
+        //Don't forget to add Due Date to this line.
+        taskInfoLabel.Text = task.course.courseName + "\n Due Date Here";
 
 		taskDescriptionArea.Text = task.taskDescription;
 	}
+
+    private void Task_UpdateTitle()
+    {
+        openTabs[tabBar.CurrentTab].task.taskName = taskTitleLabelEdit.Text;
+
+        UpdateOpenTabs();
+        UpdateTree();
+    }
+
+    private void Task_UpdateDescription()
+    {
+        openTabs[tabBar.CurrentTab].task.taskDescription = taskDescriptionArea.Text;
+    }
+
+    private void UpdateSecondaryDisplay(long selectedTab)
+    {
+        if (selectedTab == 0)
+        {
+            calendarNode.Visible = true;
+            upcomingAssignmentsNode.Visible = false;
+        }
+        else
+        {
+            calendarNode.Visible = false;
+            upcomingAssignmentsNode.Visible = true;
+        }
+    }
 }
 
 public class SortExample

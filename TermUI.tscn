@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://ce7aonb2ttgv4"]
+[gd_scene load_steps=3 format=3 uid="uid://ce7aonb2ttgv4"]
 
 [ext_resource type="Script" path="res://Scripts/Tester.cs" id="1_5a2fi"]
+[ext_resource type="Script" path="res://Scripts/LabelEdit.cs" id="2_rx2n4"]
 
 [node name="TermUI" type="Control"]
 layout_mode = 3
@@ -10,16 +11,20 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("tabBar", "termNameLabel", "courseParentNode", "courseNameLabel", "courseInfoArea", "taskParentNode", "taskInfoLabel", "taskDescriptionArea", "coursesTree")]
+[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("tabBar", "termNameLabel", "courseParentNode", "courseNameLabelEdit", "courseInfoArea", "taskParentNode", "taskTitleLabelEdit", "taskInfoLabel", "taskDescriptionArea", "secondaryTabBar", "calendarNode", "upcomingAssignmentsNode", "coursesTree")]
 script = ExtResource("1_5a2fi")
 tabBar = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/ScrollContainer/TabBar")
 termNameLabel = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/RichTextLabel")
 courseParentNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox")
-courseNameLabel = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/RichTextLabel")
+courseNameLabelEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/CourseTitleLabel")
 courseInfoArea = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/TextEdit")
 taskParentNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox")
+taskTitleLabelEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TaskNameLabel")
 taskInfoLabel = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/RichTextLabel")
 taskDescriptionArea = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TextEdit")
+secondaryTabBar = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/ScrollContainer/TabBar")
+calendarNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll")
+upcomingAssignmentsNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll")
 coursesTree = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/ScrollContainer_SelectTerm/Tree")
 
 [node name="LayoutScaler" type="Control" parent="."]
@@ -49,7 +54,7 @@ layout_mode = 2
 [node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 bbcode_enabled = true
-text = "[font_size=20][b][center]Winter Term 2025"
+text = "[font_size=25][b][center]Winter Term 2025"
 fit_content = true
 
 [node name="ScrollContainer_SelectTerm" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer"]
@@ -65,16 +70,6 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 allow_reselect = true
 hide_root = true
-
-[node name="VBoxContainer" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="TextEdit" type="TextEdit" parent="LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-placeholder_text = "Upcoming Assignments"
-wrap_mode = 1
 
 [node name="MainDisplay" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer"]
 layout_mode = 2
@@ -105,15 +100,51 @@ tab_1/title = "Example Tab 2"
 tab_2/title = "Example Tab 3"
 
 [node name="TaskVBox" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2"]
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="TaskNameLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox" node_paths=PackedStringArray("editUI", "textEdit", "saveButton")]
+layout_mode = 2
+focus_mode = 2
+bbcode_enabled = true
+text = "[font_size=20]Task Name"
+fit_content = true
+context_menu_enabled = true
+selection_enabled = true
+script = ExtResource("2_rx2n4")
+editUI = NodePath("../TaskNameEdit")
+textEdit = NodePath("../TaskNameEdit/VBoxContainer/TaskNameTextEdit")
+saveButton = NodePath("../TaskNameEdit/VBoxContainer/TaskNameSaveButton")
+
+[node name="TaskNameEdit" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TaskNameEdit"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TaskNameTextEdit" type="TextEdit" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TaskNameEdit/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "e"
+placeholder_text = "Assignment Name"
+
+[node name="TaskNameSaveButton" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TaskNameEdit/VBoxContainer"]
+layout_mode = 2
+text = "Save Title"
 
 [node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = true
-text = "Task Name
-Course Name
+text = "Course Name
 Due Date (Hyperlink?)"
 
 [node name="TextEdit" type="TextEdit" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox"]
@@ -145,11 +176,40 @@ text = "Example Task"
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox"]
+[node name="CourseTitleLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox" node_paths=PackedStringArray("editUI", "textEdit", "saveButton")]
 layout_mode = 2
-size_flags_vertical = 3
+focus_mode = 2
 bbcode_enabled = true
 text = "Course Name"
+fit_content = true
+selection_enabled = true
+script = ExtResource("2_rx2n4")
+editUI = NodePath("../CourseTitleEdit")
+textEdit = NodePath("../CourseTitleEdit/VBoxContainer/CourseTitleTextEdit")
+saveButton = NodePath("../CourseTitleEdit/VBoxContainer/CourseTitleSaveButton")
+
+[node name="CourseTitleEdit" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/CourseTitleEdit"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CourseTitleTextEdit" type="TextEdit" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/CourseTitleEdit/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "e"
+placeholder_text = "Assignment Name"
+
+[node name="CourseTitleSaveButton" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/CourseTitleEdit/VBoxContainer"]
+layout_mode = 2
+text = "Save Title"
 
 [node name="TextEdit" type="TextEdit" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox"]
 layout_mode = 2
@@ -160,38 +220,47 @@ placeholder_text = "Course Info"
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Button" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/VBoxContainer"]
-layout_mode = 2
-text = "Task List"
-
-[node name="Button3" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/VBoxContainer"]
-layout_mode = 2
-text = "Task List"
-
 [node name="Button4" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/VBoxContainer"]
 layout_mode = 2
 text = "Add New Task"
 
-[node name="Calendar" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer"]
+[node name="SecondaryDisplay" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 4.0
 
-[node name="ScrollContainer" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar"]
+[node name="VBoxContainer" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+
+[node name="TabBar" type="TabBar" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/ScrollContainer"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_horizontal = 3
+clip_tabs = false
+tab_count = 2
+tab_0/title = "Calendar"
+tab_1/title = "Upcoming Assignments"
+
+[node name="CalendarScroll" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 vertical_scroll_mode = 2
 
-[node name="Month" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer"]
+[node name="Month" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month"]
+[node name="VBoxContainer" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -199,64 +268,64 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer"]
 layout_mode = 2
 text = "Month"
 fit_content = true
 
-[node name="GridContainer" type="GridContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer"]
+[node name="GridContainer" type="GridContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 columns = 7
 
-[node name="Sunday" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Sunday" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Sun"
 fit_content = true
 
-[node name="Monday" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Monday" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Mon"
 fit_content = true
 
-[node name="Tuesday" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Tuesday" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Tue"
 fit_content = true
 
-[node name="Wednesday" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Wednesday" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Wed"
 fit_content = true
 
-[node name="Thursday" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Thursday" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Thu"
 fit_content = true
 
-[node name="Friday" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Friday" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Fri"
 fit_content = true
 
-[node name="Saturdau" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Saturdau" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Sat"
 fit_content = true
 
-[node name="Date" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Date" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date"]
+[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -264,7 +333,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date"]
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -275,12 +344,12 @@ text = "1.
 
 - Task Name"
 
-[node name="Date2" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Date2" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date2"]
+[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date2"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -288,7 +357,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date2"]
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date2"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -298,12 +367,12 @@ grow_vertical = 2
 text = "2.
 "
 
-[node name="Date3" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Date3" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date3"]
+[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date3"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -311,7 +380,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date3"]
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date3"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -321,12 +390,12 @@ grow_vertical = 2
 text = "3
 "
 
-[node name="Date4" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Date4" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date4"]
+[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date4"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -334,7 +403,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date4"]
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date4"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -345,12 +414,12 @@ text = "4
 
 - Task Name"
 
-[node name="Date5" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Date5" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date5"]
+[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date5"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -358,7 +427,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date5"]
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date5"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -367,12 +436,12 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "5"
 
-[node name="Date6" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Date6" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date6"]
+[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date6"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -380,7 +449,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date6"]
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date6"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -389,12 +458,12 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "6"
 
-[node name="Date7" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Date7" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date7"]
+[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date7"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -402,7 +471,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date7"]
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date7"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -411,12 +480,12 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "7"
 
-[node name="Date8" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Date8" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date8"]
+[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date8"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -424,7 +493,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date8"]
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date8"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -433,12 +502,12 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "8"
 
-[node name="Date9" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Date9" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date9"]
+[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date9"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -446,7 +515,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date9"]
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date9"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -455,12 +524,12 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "9"
 
-[node name="Date10" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Date10" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date10"]
+[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date10"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -468,7 +537,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date10"]
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date10"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -479,12 +548,12 @@ text = "10
 
 - Task Name"
 
-[node name="Date11" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Date11" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date11"]
+[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date11"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -492,7 +561,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date11"]
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date11"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -501,12 +570,12 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "11"
 
-[node name="Date12" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Date12" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date12"]
+[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date12"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -514,7 +583,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date12"]
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date12"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -523,12 +592,12 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "12"
 
-[node name="Date13" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Date13" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date13"]
+[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date13"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -536,7 +605,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date13"]
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date13"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -545,12 +614,12 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "13"
 
-[node name="Date14" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer"]
+[node name="Date14" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date14"]
+[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date14"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -558,7 +627,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/Calendar/ScrollContainer/Month/VBoxContainer/GridContainer/Date14"]
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll/Month/VBoxContainer/GridContainer/Date14"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -566,3 +635,19 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "14"
+
+[node name="AssignmentsScroll" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+vertical_scroll_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TextEdit" type="TextEdit" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+placeholder_text = "All Upcoming Assignments
+Replace this later"

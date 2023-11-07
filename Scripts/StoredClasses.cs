@@ -45,7 +45,6 @@ namespace AssignmentTracker {
         public string[] additonalData;
 
 
-
         public List<PrimaryTask> tasks = new List<PrimaryTask>();
 
         public Course(string courseName, string addData)
@@ -85,6 +84,5 @@ namespace AssignmentTracker {
     public class Subtask : TaskBase {
         //Have primary task to look up. Do we need this one?
         public PrimaryTask primaryTask;
-
     }
 }
