@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 
-//TODO: Add Edit Assignment Tab.
-
 public partial class Tester : Node
 {
 	[ExportGroup("UI")]
@@ -33,11 +31,16 @@ public partial class Tester : Node
     [Export] TabBar secondaryTabBar;
     [Export] Control calendarNode;
     [Export] Control upcomingAssignmentsNode;
-    [Export] Control taskEditNode;
-    [Export] TextEdit taskEditPLACEHOLDER;
+    [Export] Control subtaskEditNode;
+
+    [ExportSubgroup("Subtask Editting Menu")]
+    [Export] TextEdit subtaskTypeEdit;
+    [Export] Button subtaskDueDateButton;
+    [Export] TextEdit subtaskDescriptionEdit;
 
 
     Term activeTerm;
+    int edittingTask = -1;
 
     //Tabs can either be a Course or a Task.
     struct TabItem
@@ -94,7 +97,7 @@ public partial class Tester : Node
 
 		coursesTree.CellSelected += Course_AddToTabBar;
 
-        primaryTabBar.TabChanged += UpdateMainDisplay;
+        primaryTabBar.TabChanged += UpdatePrimaryDisplay;
 		primaryTabBar.TabClosePressed += TabRemoved;
         primaryTabBar.ActiveTabRearranged += TabRearranged;
 
@@ -105,12 +108,18 @@ public partial class Tester : Node
         //Task Events
         taskTitleLabelEdit.EditComplete += Task_UpdateTitle;
         taskDescriptionArea.TextChanged += Task_UpdateDescription;
-        subtaskTree.CellSelected += TaskEdit_Update;
+        subtaskTree.CellSelected += SubtaskEdit_Update;
 
         //Secondary Display Events
         secondaryTabBar.TabChanged += UpdateSecondaryDisplay;
-        UpdateSecondaryDisplay(0);
 
+        //Subtask Edit
+        subtaskTypeEdit.TextChanged += Subtask_UpdateType;
+        subtaskDueDateButton.Pressed += Subtask_UpdateDueDate;
+        subtaskDescriptionEdit.TextChanged += Subtask_UpdateDescription;
+
+        //Final Initialization.
+        UpdateSecondaryDisplay(0);
         UpdateOpenTabs();
 
         //Test
@@ -260,9 +269,14 @@ public partial class Tester : Node
 	//No idea why, but Godot always seems to use the largest datatype available, even when it's totally unreasonable to.
 	//Like in this case, `long tab` refers to the index of the active tab being selected.
 	//Who is ever going to need 9,223,372,036,854,775,807 tabs?
-	private void UpdateMainDisplay(long selectedTab)
+	private void UpdatePrimaryDisplay(long selectedTab)
     {
-        GD.Print("Update Main Display to tab " + selectedTab);
+        if(selectedTab == -1)
+        {
+            selectedTab = primaryTabBar.CurrentTab;
+        }
+
+        GD.Print("Update Primary Display to tab " + selectedTab);
 		if (openTabs[(int)selectedTab].isTask)
 		{
 			courseParentNode.Visible = false;
@@ -333,7 +347,17 @@ public partial class Tester : Node
             else
             {
                 //Add due date, or other items?
-                treeItem.SetText(0, task.subtasks[i].taskType + ":" + task.subtasks[i].taskDescription);
+                string taskType = task.subtasks[i].taskType;
+                taskType = taskType.Replace("\n", "");
+
+                string taskDesc = task.subtasks[i].taskDescription;
+                //Arbitrary limit.
+                if(taskDesc.Length > 25)
+                {
+                    taskDesc = taskDesc.Remove(25).Replace("\n", "") + "...";
+                }
+
+                treeItem.SetText(0, taskType + ":" + taskDesc);
             }
         }
     }
@@ -359,7 +383,7 @@ public partial class Tester : Node
     {
         calendarNode.Visible = false;
         upcomingAssignmentsNode.Visible = false;
-        taskEditNode.Visible = false;
+        subtaskEditNode.Visible = false;
 
         //Add code that updates the relevant information under these nodes.
         if (selectedTab == 0)
@@ -372,15 +396,16 @@ public partial class Tester : Node
         }
         else
         {
-            taskEditNode.Visible = true;
+            subtaskEditNode.Visible = true;
         }
     }
 
-    private void TaskEdit_Update()
+    private void SubtaskEdit_Update()
     {
         secondaryTabBar.CurrentTab = 2;
 
         TreeItem selecteditem = subtaskTree.GetSelected();
+        edittingTask = selecteditem.GetIndex();
 
         if (selecteditem != null)
         {
@@ -388,8 +413,42 @@ public partial class Tester : Node
 
             //Make this more accurate later.
             secondaryTabBar.SetTabTitle(2, selectedTask.taskDescription);
-            taskEditPLACEHOLDER.Text = selectedTask.taskDescription;
+
+            subtaskTypeEdit.Text = selectedTask.taskType;
+            subtaskDueDateButton.Text = selectedTask.dueDate.ToString();
+            subtaskDescriptionEdit.Text = selectedTask.taskDescription;
         }
+    }
+
+    void Subtask_UpdateType()
+    {
+        if (edittingTask != -1)
+        {
+            openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].taskType = subtaskTypeEdit.Text;
+        }
+
+        UpdatePrimaryDisplay(-1);
+    }
+
+    void Subtask_UpdateDueDate()
+    {
+        if (edittingTask != -1)
+        {
+            //Add the ability for the user to select a due date once the button is pressed.
+            //Alternatively, swap the button out for a dropdown?
+
+            //openTabs[primaryTabBar.CurrentTab].task.subtasks[selecteditem.GetIndex()].dueDate;
+        }
+    }
+
+    void Subtask_UpdateDescription()
+    {
+        if (edittingTask != -1)
+        {
+            openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].taskDescription = subtaskDescriptionEdit.Text;
+        }
+
+        UpdatePrimaryDisplay(-1);
     }
 }
 

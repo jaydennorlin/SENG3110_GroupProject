@@ -11,7 +11,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("primaryTabBar", "termNameLabel", "coursesTree", "courseParentNode", "courseNameLabelEdit", "courseInfoArea", "taskParentNode", "taskTitleLabelEdit", "taskInfoLabel", "taskDescriptionArea", "subtaskTree", "secondaryTabBar", "calendarNode", "upcomingAssignmentsNode", "taskEditNode", "taskEditPLACEHOLDER")]
+[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("primaryTabBar", "termNameLabel", "coursesTree", "courseParentNode", "courseNameLabelEdit", "courseInfoArea", "taskParentNode", "taskTitleLabelEdit", "taskInfoLabel", "taskDescriptionArea", "subtaskTree", "secondaryTabBar", "calendarNode", "upcomingAssignmentsNode", "subtaskEditNode", "subtaskTypeEdit", "subtaskDueDateButton", "subtaskDescriptionEdit")]
 script = ExtResource("1_5a2fi")
 primaryTabBar = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/ScrollContainer/TabBar")
 termNameLabel = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/RichTextLabel")
@@ -24,11 +24,13 @@ taskTitleLabelEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/Mai
 taskInfoLabel = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/RichTextLabel")
 taskDescriptionArea = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TextEdit")
 subtaskTree = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/SubTasksScrollContainer/SubTasksTree")
-secondaryTabBar = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/ScrollContainer/TabBar")
+secondaryTabBar = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TabScroll/TabBar")
 calendarNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll")
 upcomingAssignmentsNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll")
-taskEditNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll")
-taskEditPLACEHOLDER = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/TextEdit")
+subtaskEditNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll")
+subtaskTypeEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/TaskTypeEdit")
+subtaskDueDateButton = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/DueDateButton")
+subtaskDescriptionEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/TaskDescriptionEdit")
 
 [node name="LayoutScaler" type="Control" parent="."]
 layout_mode = 1
@@ -221,11 +223,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer"]
+[node name="TabScroll" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 
-[node name="TabBar" type="TabBar" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/ScrollContainer"]
+[node name="TabBar" type="TabBar" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TabScroll"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -236,6 +238,7 @@ tab_1/title = "Upcoming Assignments"
 tab_2/title = "currentTask"
 
 [node name="CalendarScroll" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer"]
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
 vertical_scroll_mode = 2
@@ -622,6 +625,7 @@ grow_vertical = 2
 text = "14"
 
 [node name="AssignmentsScroll" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer"]
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
 vertical_scroll_mode = 2
@@ -647,7 +651,17 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="TextEdit" type="TextEdit" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer"]
+[node name="TaskTypeEdit" type="TextEdit" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_vertical = 0
+placeholder_text = "Task Type (Optional)"
+
+[node name="DueDateButton" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer"]
+layout_mode = 2
+text = "Due: 11:59pm, March 15th, 2023"
+
+[node name="TaskDescriptionEdit" type="TextEdit" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-placeholder_text = "Replace with Task Editor"
+placeholder_text = "Task Description Here"
