@@ -4,15 +4,19 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 
+//TODO: Add Edit Assignment Tab.
+
 public partial class Tester : Node
 {
 	[ExportGroup("UI")]
-	[Export] TabBar tabBar;
+	[Export] TabBar primaryTabBar;
 
 	[ExportGroup("Term Fields")]
 	[Export] RichTextLabel termNameLabel;
+    [Export] Tree coursesTree;
+    TreeItem coursesTreeRoot;
 
-	[ExportGroup("Course Fields")]
+    [ExportGroup("Course Fields")]
 	[Export] Control courseParentNode;
     [Export] LabelEdit courseNameLabelEdit;
     [Export] TextEdit courseInfoArea;
@@ -22,19 +26,21 @@ public partial class Tester : Node
     [Export] LabelEdit taskTitleLabelEdit;
 	[Export] RichTextLabel taskInfoLabel;
 	[Export] TextEdit taskDescriptionArea;
+    [Export] Tree subtaskTree;
+    TreeItem subtaskTreeRoot;
 
     [ExportGroup("Secondary Display")]
     [Export] TabBar secondaryTabBar;
     [Export] Control calendarNode;
     [Export] Control upcomingAssignmentsNode;
+    [Export] Control taskEditNode;
+    [Export] TextEdit taskEditPLACEHOLDER;
 
-    [Export] Tree coursesTree;
-    TreeItem treeRoot;
 
     Term activeTerm;
 
-	//Tabs can either be a Course or a Task.
-	struct TabItem
+    //Tabs can either be a Course or a Task.
+    struct TabItem
 	{
 		public bool isTask;
 
@@ -63,6 +69,10 @@ public partial class Tester : Node
 		exampleCourse.tasks.Add(new PrimaryTask("Example Task 2", exampleCourse));
 		exampleCourse.tasks.Add(new PrimaryTask("Example Task 3", exampleCourse));
 
+        //Change this to Subtask
+        exampleCourse.tasks[0].subtasks.Add(new TaskBase("How many eggs isd?", "Quiz"));
+        exampleCourse.tasks[0].subtasks.Add(new TaskBase("KIll the birds", "Assignment"));
+
         activeTerm.courses.Add(exampleCourse);
 
         exampleCourse = new Course("EXCO 2200", "Example data wibibibibibibibibibibibibibibibi");
@@ -84,8 +94,9 @@ public partial class Tester : Node
 
 		coursesTree.CellSelected += Course_AddToTabBar;
 
-        tabBar.TabChanged += UpdateMainDisplay;
-		tabBar.TabClosePressed += TabRemoved;
+        primaryTabBar.TabChanged += UpdateMainDisplay;
+		primaryTabBar.TabClosePressed += TabRemoved;
+        primaryTabBar.ActiveTabRearranged += TabRearranged;
 
         //Course Events
         courseNameLabelEdit.EditComplete += Course_UpdateTitle;
@@ -94,6 +105,7 @@ public partial class Tester : Node
         //Task Events
         taskTitleLabelEdit.EditComplete += Task_UpdateTitle;
         taskDescriptionArea.TextChanged += Task_UpdateDescription;
+        subtaskTree.CellSelected += TaskEdit_Update;
 
         //Secondary Display Events
         secondaryTabBar.TabChanged += UpdateSecondaryDisplay;
@@ -102,7 +114,7 @@ public partial class Tester : Node
         UpdateOpenTabs();
 
         //Test
-        List<TaskBase> alltasks = new List<TaskBase>();
+        /*List<TaskBase> alltasks = new List<TaskBase>();
 
         for (int i = 0; i < activeTerm.courses.Count; i++)
         {
@@ -120,18 +132,18 @@ public partial class Tester : Node
         {
             int j = sortedTasks[i].originalIndex;
             GD.Print(((PrimaryTask)alltasks[j]).taskName + " date " + ((PrimaryTask)alltasks[j]).dueDate.ToString());
-        }
+        }*/
     }
 
     #region Initialization
     public void AddCourseToTree(Course course)
     {
-        if (treeRoot == null)
+        if (coursesTreeRoot == null)
         {
-            treeRoot = coursesTree.CreateItem();
+            coursesTreeRoot = coursesTree.CreateItem();
         }
 
-        TreeItem courseTreeItem = coursesTree.CreateItem(treeRoot);
+        TreeItem courseTreeItem = coursesTree.CreateItem(coursesTreeRoot);
         courseTreeItem.SetText(0, course.courseName);
 
         for (int i = 0; i < course.tasks.Count; i++)
@@ -145,10 +157,10 @@ public partial class Tester : Node
     {
         for (int i = 0; i < activeTerm.courses.Count; i++)
         {
-            treeRoot.GetChild(i).SetText(0, activeTerm.courses[i].courseName);
+            coursesTreeRoot.GetChild(i).SetText(0, activeTerm.courses[i].courseName);
             for (int j = 0; j < activeTerm.courses[i].tasks.Count; j++)
             {
-                treeRoot.GetChild(i).GetChild(j).SetText(0, activeTerm.courses[i].tasks[j].taskName);
+                coursesTreeRoot.GetChild(i).GetChild(j).SetText(0, activeTerm.courses[i].tasks[j].taskName);
             }
         }
     }
@@ -160,7 +172,7 @@ public partial class Tester : Node
 		//Save once every few frames?
 	}
 
-    //Consider using MouseButtonInde to bring up a context menu that lets you create a new task/course?
+    //Consider using MouseButtonIndex to bring up a context menu that lets you create a new task/course?
     private void Course_AddToTabBar()
     {
         TreeItem selecteditem = coursesTree.GetSelected();
@@ -170,7 +182,7 @@ public partial class Tester : Node
             TabItem createdItem;
 
             //Courses are childed to the root of the tree, so the selected TreeItem must be a course.
-            if (selecteditem.GetParent() == treeRoot)
+            if (selecteditem.GetParent() == coursesTreeRoot)
             {
                 createdItem = new TabItem(false, null, activeTerm.courses[selecteditem.GetIndex()]);
             }
@@ -185,11 +197,11 @@ public partial class Tester : Node
             {
                 openTabs.Add(createdItem);
                 UpdateOpenTabs();
-                tabBar.CurrentTab = openTabs.Count - 1;
+                primaryTabBar.CurrentTab = openTabs.Count - 1;
             }
             else
             {
-                tabBar.CurrentTab = alreadyExists;
+                primaryTabBar.CurrentTab = alreadyExists;
             }
         }
     }
@@ -201,9 +213,33 @@ public partial class Tester : Node
         UpdateOpenTabs();
     }
 
+    //NOTE: Rearranging tabs does not work at all. Disabled.
+    //There is a GetPreviousTab() method, allegedly. Look into that.
+    void TabRearranged(long idxTo)
+    {
+        /*GD.Print("Tab moved from " + lastTab + " to " + idxTo);
+        TabItem rearrangedTab = openTabs[lastTab];
+
+        openTabs.RemoveAt(lastTab);
+
+        openTabs.Insert((int)idxTo, rearrangedTab);
+
+        for (int i = 0; i < openTabs.Count; i++)
+        {
+            if (openTabs[i].isTask)
+            {
+                GD.Print(i + ": " + openTabs[i].task.taskName);
+            }
+            else
+            {
+                GD.Print(i + ": " + openTabs[i].course.courseName);
+            }
+        }*/
+    }
+
     public void UpdateOpenTabs()
 	{
-        tabBar.ClearTabs();
+        primaryTabBar.ClearTabs();
 
 		if(openTabs.Count != 0)
 		{
@@ -211,11 +247,11 @@ public partial class Tester : Node
             {
                 if (openTabs[i].isTask)
                 {
-                    tabBar.AddTab(openTabs[i].task.taskName);
+                    primaryTabBar.AddTab(openTabs[i].task.taskName);
                 }
                 else
                 {
-                    tabBar.AddTab(openTabs[i].course.courseName);
+                    primaryTabBar.AddTab(openTabs[i].course.courseName);
                 }
             }
         }
@@ -232,6 +268,8 @@ public partial class Tester : Node
 			courseParentNode.Visible = false;
             taskParentNode.Visible = true;
 
+            //Clearing undo history so you don't get weird behaviours, like undoing text from a previous tab into your current tab.
+            taskDescriptionArea.ClearUndoHistory();
             Task_UpdateDisplay(openTabs[(int)selectedTab].task);
 		}
 		else
@@ -239,11 +277,13 @@ public partial class Tester : Node
             courseParentNode.Visible = true;
             taskParentNode.Visible = false;
 
+            courseInfoArea.ClearUndoHistory();
             Course_UpdateDisplay(openTabs[(int)selectedTab].course);
         }
 
         //Cancel all current open label edits.
         taskTitleLabelEdit.CancelEdit();
+        courseNameLabelEdit.CancelEdit();
     }
 
     public void Course_UpdateDisplay(Course course)
@@ -256,14 +296,14 @@ public partial class Tester : Node
 
     private void Course_UpdateTitle()
     {
-        openTabs[tabBar.CurrentTab].course.courseName = courseNameLabelEdit.Text;
+        openTabs[primaryTabBar.CurrentTab].course.courseName = courseNameLabelEdit.Text;
 
         UpdateTree();
     }
 
     private void Course_UpdateDescription()
     {
-        openTabs[tabBar.CurrentTab].course.additonalData[0] = courseInfoArea.Text;
+        openTabs[primaryTabBar.CurrentTab].course.additonalData[0] = courseInfoArea.Text;
     }
 
     public void Task_UpdateDisplay(PrimaryTask task)
@@ -273,32 +313,82 @@ public partial class Tester : Node
         taskInfoLabel.Text = task.course.courseName + "\n Due Date Here";
 
 		taskDescriptionArea.Text = task.taskDescription;
-	}
+
+        GD.Print("Clear Tree");
+        subtaskTree.Clear();
+        subtaskTreeRoot = subtaskTree.CreateItem();
+
+        for (int i = 0; i < task.subtasks.Count; i++)
+        {
+            GD.Print("Add Item " + i);
+
+            TreeItem treeItem = subtaskTree.CreateItem(subtaskTreeRoot);
+
+            if (task.subtasks[i] is PrimaryTask)
+            {
+                treeItem.SetText(0, ((PrimaryTask)task.subtasks[i]).taskName);
+
+                //Add recursion.
+            }
+            else
+            {
+                //Add due date, or other items?
+                treeItem.SetText(0, task.subtasks[i].taskType + ":" + task.subtasks[i].taskDescription);
+            }
+        }
+    }
 
     private void Task_UpdateTitle()
     {
-        openTabs[tabBar.CurrentTab].task.taskName = taskTitleLabelEdit.Text;
+        int currentTab = primaryTabBar.CurrentTab;
+        openTabs[currentTab].task.taskName = taskTitleLabelEdit.Text;
 
         UpdateOpenTabs();
         UpdateTree();
+
+        //UpdateOpenTabs() causes the first tab to be selected, so we force it back to the current tab we're at.
+        primaryTabBar.CurrentTab = currentTab;
     }
 
     private void Task_UpdateDescription()
     {
-        openTabs[tabBar.CurrentTab].task.taskDescription = taskDescriptionArea.Text;
+        openTabs[primaryTabBar.CurrentTab].task.taskDescription = taskDescriptionArea.Text;
     }
 
     private void UpdateSecondaryDisplay(long selectedTab)
     {
+        calendarNode.Visible = false;
+        upcomingAssignmentsNode.Visible = false;
+        taskEditNode.Visible = false;
+
+        //Add code that updates the relevant information under these nodes.
         if (selectedTab == 0)
         {
             calendarNode.Visible = true;
-            upcomingAssignmentsNode.Visible = false;
+        }
+        else if(selectedTab == 1)
+        {
+            upcomingAssignmentsNode.Visible = true;
         }
         else
         {
-            calendarNode.Visible = false;
-            upcomingAssignmentsNode.Visible = true;
+            taskEditNode.Visible = true;
+        }
+    }
+
+    private void TaskEdit_Update()
+    {
+        secondaryTabBar.CurrentTab = 2;
+
+        TreeItem selecteditem = subtaskTree.GetSelected();
+
+        if (selecteditem != null)
+        {
+            TaskBase selectedTask = openTabs[primaryTabBar.CurrentTab].task.subtasks[selecteditem.GetIndex()];
+
+            //Make this more accurate later.
+            secondaryTabBar.SetTabTitle(2, selectedTask.taskDescription);
+            taskEditPLACEHOLDER.Text = selectedTask.taskDescription;
         }
     }
 }

@@ -64,9 +64,19 @@ namespace AssignmentTracker {
         //Add due date.
         public DateTime dueDate;
 
-
         //Two way connection, so a task alone knows what course its part of.
         public Course course;
+
+        public TaskBase(string desc, string taskType)
+        {
+            this.taskDescription = desc;
+            this.taskType = taskType;
+        }
+
+        public TaskBase()
+        {
+
+        }
     }
 
     public class PrimaryTask : TaskBase {

@@ -11,10 +11,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("tabBar", "termNameLabel", "courseParentNode", "courseNameLabelEdit", "courseInfoArea", "taskParentNode", "taskTitleLabelEdit", "taskInfoLabel", "taskDescriptionArea", "secondaryTabBar", "calendarNode", "upcomingAssignmentsNode", "coursesTree")]
+[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("primaryTabBar", "termNameLabel", "coursesTree", "courseParentNode", "courseNameLabelEdit", "courseInfoArea", "taskParentNode", "taskTitleLabelEdit", "taskInfoLabel", "taskDescriptionArea", "subtaskTree", "secondaryTabBar", "calendarNode", "upcomingAssignmentsNode", "taskEditNode", "taskEditPLACEHOLDER")]
 script = ExtResource("1_5a2fi")
-tabBar = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/ScrollContainer/TabBar")
+primaryTabBar = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/ScrollContainer/TabBar")
 termNameLabel = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/RichTextLabel")
+coursesTree = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/ScrollContainer_SelectTerm/Tree")
 courseParentNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox")
 courseNameLabelEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/CourseTitleLabel")
 courseInfoArea = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/TextEdit")
@@ -22,10 +23,12 @@ taskParentNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDis
 taskTitleLabelEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TaskNameLabel")
 taskInfoLabel = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/RichTextLabel")
 taskDescriptionArea = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TextEdit")
+subtaskTree = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/SubTasksScrollContainer/SubTasksTree")
 secondaryTabBar = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/ScrollContainer/TabBar")
 calendarNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll")
 upcomingAssignmentsNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll")
-coursesTree = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/ScrollContainer_SelectTerm/Tree")
+taskEditNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll")
+taskEditPLACEHOLDER = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/TextEdit")
 
 [node name="LayoutScaler" type="Control" parent="."]
 layout_mode = 1
@@ -100,7 +103,6 @@ tab_1/title = "Example Tab 2"
 tab_2/title = "Example Tab 3"
 
 [node name="TaskVBox" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2"]
-visible = false
 layout_mode = 2
 size_flags_vertical = 3
 
@@ -152,25 +154,15 @@ layout_mode = 2
 size_flags_vertical = 3
 placeholder_text = "Asignment Info"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox"]
+[node name="SubTasksScrollContainer" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Button" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/VBoxContainer"]
+[node name="SubTasksTree" type="Tree" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/SubTasksScrollContainer"]
 layout_mode = 2
-text = "Example Task"
-
-[node name="Button3" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/VBoxContainer"]
-layout_mode = 2
-text = "Example Task"
-
-[node name="Button4" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/VBoxContainer"]
-layout_mode = 2
-text = "Example Task"
-
-[node name="Button2" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/VBoxContainer"]
-layout_mode = 2
-text = "Example Task"
+size_flags_horizontal = 3
+size_flags_vertical = 3
+hide_root = true
 
 [node name="CourseVBox" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2"]
 layout_mode = 2
@@ -216,14 +208,6 @@ layout_mode = 2
 size_flags_vertical = 3
 placeholder_text = "Course Info"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="Button4" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/VBoxContainer"]
-layout_mode = 2
-text = "Add New Task"
-
 [node name="SecondaryDisplay" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -246,9 +230,10 @@ custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 size_flags_horizontal = 3
 clip_tabs = false
-tab_count = 2
+tab_count = 3
 tab_0/title = "Calendar"
 tab_1/title = "Upcoming Assignments"
+tab_2/title = "currentTask"
 
 [node name="CalendarScroll" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer"]
 layout_mode = 2
@@ -651,3 +636,18 @@ layout_mode = 2
 size_flags_vertical = 3
 placeholder_text = "All Upcoming Assignments
 Replace this later"
+
+[node name="TaskEditScroll" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+vertical_scroll_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TextEdit" type="TextEdit" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+placeholder_text = "Replace with Task Editor"
