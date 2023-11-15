@@ -6,24 +6,26 @@ using System.Data;
 
 public partial class Tester : Node
 {
-	[ExportGroup("UI")]
-	[Export] TabBar primaryTabBar;
+    [ExportGroup("UI")]
+    [Export] TabBar primaryTabBar;
 
-	[ExportGroup("Term Fields")]
-	[Export] RichTextLabel termNameLabel;
+    [ExportGroup("Term Fields")]
+    [Export] RichTextLabel termNameLabel;
+    [Export] Button createCourseButton;
     [Export] Tree coursesTree;
     TreeItem coursesTreeRoot;
 
     [ExportGroup("Course Fields")]
-	[Export] Control courseParentNode;
+    [Export] Control courseParentNode;
     [Export] LabelEdit courseNameLabelEdit;
     [Export] TextEdit courseInfoArea;
+    [Export] Button deleteCourseButton;
 
     [ExportGroup("Task Fields")]
     [Export] Control taskParentNode;
     [Export] LabelEdit taskTitleLabelEdit;
-	[Export] RichTextLabel taskInfoLabel;
-	[Export] TextEdit taskDescriptionArea;
+    [Export] RichTextLabel taskInfoLabel;
+    [Export] TextEdit taskDescriptionArea;
     [Export] Tree subtaskTree;
     TreeItem subtaskTreeRoot;
 
@@ -44,33 +46,33 @@ public partial class Tester : Node
 
     //Tabs can either be a Course or a Task.
     struct TabItem
-	{
-		public bool isTask;
+    {
+        public bool isTask;
 
         public PrimaryTask task;
         public Course course;
 
-		public TabItem(bool isTask, PrimaryTask task, Course course)
-		{
-			this.isTask = isTask;
-			this.task = task;
-			this.course = course;
-		}
-	}
+        public TabItem(bool isTask, PrimaryTask task, Course course)
+        {
+            this.isTask = isTask;
+            this.task = task;
+            this.course = course;
+        }
+    }
 
-	List<TabItem> openTabs = new List<TabItem>();
+    List<TabItem> openTabs = new List<TabItem>();
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
-	{
+    {
         #region Generation of Testing Data. 
         activeTerm = new Term();
-		activeTerm.termName = "Example Term 20XX";
+        activeTerm.termName = "Example Term 20XX";
 
-		Course exampleCourse = new Course("EXCO 1100", "Example data wabababababababababababababababa");
-		exampleCourse.tasks.Add(new PrimaryTask("Example Task", exampleCourse));
-		exampleCourse.tasks.Add(new PrimaryTask("Example Task 2", exampleCourse));
-		exampleCourse.tasks.Add(new PrimaryTask("Example Task 3", exampleCourse));
+        Course exampleCourse = new Course("EXCO 1100", "Example data wabababababababababababababababa");
+        exampleCourse.tasks.Add(new PrimaryTask("Example Task", exampleCourse));
+        exampleCourse.tasks.Add(new PrimaryTask("Example Task 2", exampleCourse));
+        exampleCourse.tasks.Add(new PrimaryTask("Example Task 3", exampleCourse));
 
         //Change this to Subtask
         exampleCourse.tasks[0].subtasks.Add(new TaskBase("How many eggs isd?", "Quiz"));
@@ -90,20 +92,24 @@ public partial class Tester : Node
         //Formatting makes it larger, bold, and centered.
         termNameLabel.Text = "[font_size=20][b][center]" + activeTerm.termName;
 
+        createCourseButton.Pressed += CreateNewCourse;
+
         for (int i = 0; i < activeTerm.courses.Count; i++)
-		{
-			AddCourseToTree(activeTerm.courses[i]);
+        {
+            AddCourseToTree(activeTerm.courses[i]);
         }
 
-		coursesTree.CellSelected += Course_AddToTabBar;
+        //Primary/Generic Events
+        coursesTree.CellSelected += Course_AddToTabBar;
 
         primaryTabBar.TabChanged += UpdatePrimaryDisplay;
-		primaryTabBar.TabClosePressed += TabRemoved;
+        primaryTabBar.TabClosePressed += TabRemoved;
         primaryTabBar.ActiveTabRearranged += TabRearranged;
 
         //Course Events
         courseNameLabelEdit.EditComplete += Course_UpdateTitle;
         courseInfoArea.TextChanged += Course_UpdateDescription;
+        deleteCourseButton.Pressed += Course_Delete_Popup;
 
         //Task Events
         taskTitleLabelEdit.EditComplete += Task_UpdateTitle;
@@ -145,7 +151,7 @@ public partial class Tester : Node
     }
 
     #region Initialization
-    public void AddCourseToTree(Course course)
+    public void AddCourseToTree(Course course, bool select = false)
     {
         if (coursesTreeRoot == null)
         {
@@ -160,11 +166,26 @@ public partial class Tester : Node
             TreeItem item = coursesTree.CreateItem(courseTreeItem);
             item.SetText(0, course.tasks[i].taskName);
         }
+
+        if (select)
+        {
+            coursesTree.SetSelected(courseTreeItem, 0);
+        }
     }
 
     public void UpdateTree()
     {
+        //Lazy, but effective.
+        coursesTree.Clear();
+        //Disposed by the above method, but not immediately null.
+        coursesTreeRoot = null;
+
         for (int i = 0; i < activeTerm.courses.Count; i++)
+        {
+            AddCourseToTree(activeTerm.courses[i]);
+        }
+
+        /*for (int i = 0; i < activeTerm.courses.Count; i++)
         {
             coursesTreeRoot.GetChild(i).SetText(0, activeTerm.courses[i].courseName);
             for (int j = 0; j < activeTerm.courses[i].tasks.Count; j++)
@@ -172,14 +193,25 @@ public partial class Tester : Node
                 coursesTreeRoot.GetChild(i).GetChild(j).SetText(0, activeTerm.courses[i].tasks[j].taskName);
             }
         }
+
+        if(activeTerm.courses.Count < coursesTreeRoot.GetChildCount())
+        {
+            for (int i = activeTerm.courses.Count - 1; i < coursesTreeRoot.GetChildCount(); i++)
+            {
+                TreeItem toRemove = coursesTreeRoot.GetChild(i);
+                coursesTreeRoot.RemoveChild(toRemove);
+                //Removing a TreeItem from it's parent does not automatically remove it from memory, so Dispose() must manually be called.
+                toRemove.Dispose();
+            }
+        }*/
     }
     #endregion
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
-	{
-		//Save once every few frames?
-	}
+    {
+        //Save once every few frames?
+    }
 
     //Consider using MouseButtonIndex to bring up a context menu that lets you create a new task/course?
     private void Course_AddToTabBar()
@@ -247,11 +279,11 @@ public partial class Tester : Node
     }
 
     public void UpdateOpenTabs()
-	{
+    {
         primaryTabBar.ClearTabs();
 
-		if(openTabs.Count != 0)
-		{
+        if (openTabs.Count != 0)
+        {
             for (int i = 0; i < openTabs.Count; i++)
             {
                 if (openTabs[i].isTask)
@@ -266,28 +298,28 @@ public partial class Tester : Node
         }
     }
 
-	//No idea why, but Godot always seems to use the largest datatype available, even when it's totally unreasonable to.
-	//Like in this case, `long tab` refers to the index of the active tab being selected.
-	//Who is ever going to need 9,223,372,036,854,775,807 tabs?
-	private void UpdatePrimaryDisplay(long selectedTab)
+    //No idea why, but Godot always seems to use the largest datatype available, even when it's totally unreasonable to.
+    //Like in this case, `long tab` refers to the index of the active tab being selected.
+    //Who is ever going to need 9,223,372,036,854,775,807 tabs?
+    private void UpdatePrimaryDisplay(long selectedTab)
     {
-        if(selectedTab == -1)
+        if (selectedTab == -1)
         {
             selectedTab = primaryTabBar.CurrentTab;
         }
 
         GD.Print("Update Primary Display to tab " + selectedTab);
-		if (openTabs[(int)selectedTab].isTask)
-		{
-			courseParentNode.Visible = false;
+        if (openTabs[(int)selectedTab].isTask)
+        {
+            courseParentNode.Visible = false;
             taskParentNode.Visible = true;
 
             //Clearing undo history so you don't get weird behaviours, like undoing text from a previous tab into your current tab.
             taskDescriptionArea.ClearUndoHistory();
             Task_UpdateDisplay(openTabs[(int)selectedTab].task);
-		}
-		else
-		{
+        }
+        else
+        {
             courseParentNode.Visible = true;
             taskParentNode.Visible = false;
 
@@ -300,13 +332,25 @@ public partial class Tester : Node
         courseNameLabelEdit.CancelEdit();
     }
 
-    public void Course_UpdateDisplay(Course course)
-	{
-		courseNameLabelEdit.Text = course.courseName;
+    public void CreateNewCourse()
+    {
+        Course newCourse = new Course();
 
-		//Rework this later to use the entire array. Or change it to just be a single string.
-		courseInfoArea.Text = course.additonalData[0];
-	}
+        //No other initial data needed?
+        newCourse.courseName = "New Course";
+
+        activeTerm.courses.Add(newCourse);
+        AddCourseToTree(newCourse, true);
+        Course_AddToTabBar();
+    }
+
+    public void Course_UpdateDisplay(Course course)
+    {
+        courseNameLabelEdit.Text = course.courseName;
+
+        //Rework this later to use the entire array. Or change it to just be a single string.
+        courseInfoArea.Text = course.notes;
+    }
 
     private void Course_UpdateTitle()
     {
@@ -317,7 +361,47 @@ public partial class Tester : Node
 
     private void Course_UpdateDescription()
     {
-        openTabs[primaryTabBar.CurrentTab].course.additonalData[0] = courseInfoArea.Text;
+        openTabs[primaryTabBar.CurrentTab].course.notes = courseInfoArea.Text;
+    }
+
+    private void Course_Delete_Popup()
+    {
+        ConfirmationDialog dialog = new ConfirmationDialog();
+        AddChild(dialog);
+
+        dialog.Confirmed += Course_Delete;
+
+        //Consider finding some way of avoiding this. Investigate Obsidian/System Trash method, and file structure serializaliation.
+        dialog.Title = openTabs[primaryTabBar.CurrentTab].course.courseName + " WILL BE PERMANENTLY DELETED.";
+
+        dialog.Popup();
+    }
+
+    void Course_Delete()
+    {
+        //Validate that this results in it being properly removed.
+        Course toBeRemoved = openTabs[primaryTabBar.CurrentTab].course;
+        openTabs.RemoveAt(primaryTabBar.CurrentTab);
+
+        //Remove any currently open tabs of Tasks belonging to the course being deleted.
+        for (int i = 0; i < openTabs.Count; i++)
+        {
+            for (int j = 0; j < toBeRemoved.tasks.Count; j++)
+            {
+                if (openTabs[i].task == toBeRemoved.tasks[j])
+                {
+                    GD.Print("Removed");
+                    openTabs.RemoveAt(i);
+                    i--;
+                    break;
+                }
+            }
+        }
+
+        activeTerm.courses.Remove(toBeRemoved);
+
+        UpdateOpenTabs();
+        UpdateTree();
     }
 
     public void Task_UpdateDisplay(PrimaryTask task)
@@ -354,7 +438,7 @@ public partial class Tester : Node
                 //Arbitrary limit.
                 if(taskDesc.Length > 25)
                 {
-                    taskDesc = taskDesc.Remove(25).Replace("\n", "") + "...";
+                    taskDesc = taskDesc.Remove(22).Replace("\n", "") + "...";
                 }
 
                 treeItem.SetText(0, taskType + ":" + taskDesc);

@@ -42,15 +42,21 @@ namespace AssignmentTracker {
         public string courseName;
         //Consider making this some sort of two-part string.
         //First part is the type of data being stored (Professor Name, Phone Number, etc), second part is the actual data.
-        public string[] additonalData;
-
+        //public string[] additonalData;
+        public string notes;
 
         public List<PrimaryTask> tasks = new List<PrimaryTask>();
 
         public Course(string courseName, string addData)
         {
             this.courseName = courseName;
-            this.additonalData = new string[] { addData };
+            this.notes = addData;
+            //this.additonalData = new string[] { addData };
+        }
+
+        public Course()
+        {
+
         }
     }
 

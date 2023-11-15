@@ -11,14 +11,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("primaryTabBar", "termNameLabel", "coursesTree", "courseParentNode", "courseNameLabelEdit", "courseInfoArea", "taskParentNode", "taskTitleLabelEdit", "taskInfoLabel", "taskDescriptionArea", "subtaskTree", "secondaryTabBar", "calendarNode", "upcomingAssignmentsNode", "subtaskEditNode", "subtaskTypeEdit", "subtaskDueDateButton", "subtaskDescriptionEdit")]
+[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("primaryTabBar", "termNameLabel", "createCourseButton", "coursesTree", "courseParentNode", "courseNameLabelEdit", "courseInfoArea", "deleteCourseButton", "taskParentNode", "taskTitleLabelEdit", "taskInfoLabel", "taskDescriptionArea", "subtaskTree", "secondaryTabBar", "calendarNode", "upcomingAssignmentsNode", "subtaskEditNode", "subtaskTypeEdit", "subtaskDueDateButton", "subtaskDescriptionEdit")]
 script = ExtResource("1_5a2fi")
 primaryTabBar = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/ScrollContainer/TabBar")
 termNameLabel = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/RichTextLabel")
+createCourseButton = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/NewCourseButton")
 coursesTree = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/ScrollContainer_SelectTerm/Tree")
 courseParentNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox")
 courseNameLabelEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/CourseTitleLabel")
 courseInfoArea = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/TextEdit")
+deleteCourseButton = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/DeleteCourseButton")
 taskParentNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox")
 taskTitleLabelEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TaskNameLabel")
 taskInfoLabel = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/RichTextLabel")
@@ -61,6 +63,10 @@ layout_mode = 2
 bbcode_enabled = true
 text = "[font_size=25][b][center]Winter Term 2025"
 fit_content = true
+
+[node name="NewCourseButton" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Create New Course"
 
 [node name="ScrollContainer_SelectTerm" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(186, 0)
@@ -108,7 +114,7 @@ tab_2/title = "Example Tab 3"
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="TaskNameLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox" node_paths=PackedStringArray("editUI", "textEdit", "saveButton")]
+[node name="TaskNameLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox" node_paths=PackedStringArray("editUI", "textEdit", "saveButton", "cancelButton")]
 layout_mode = 2
 focus_mode = 2
 bbcode_enabled = true
@@ -119,7 +125,8 @@ selection_enabled = true
 script = ExtResource("2_rx2n4")
 editUI = NodePath("../TaskNameEdit")
 textEdit = NodePath("../TaskNameEdit/VBoxContainer/TaskNameTextEdit")
-saveButton = NodePath("../TaskNameEdit/VBoxContainer/TaskNameSaveButton")
+saveButton = NodePath("../TaskNameEdit/VBoxContainer/HBoxContainer/SaveButton")
+cancelButton = NodePath("../TaskNameEdit/VBoxContainer/HBoxContainer/CancelButton")
 
 [node name="TaskNameEdit" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox"]
 visible = false
@@ -137,12 +144,20 @@ grow_vertical = 2
 [node name="TaskNameTextEdit" type="TextEdit" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TaskNameEdit/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-text = "e"
-placeholder_text = "Assignment Name"
+placeholder_text = "Label Text"
 
-[node name="TaskNameSaveButton" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TaskNameEdit/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TaskNameEdit/VBoxContainer"]
 layout_mode = 2
-text = "Save Title"
+
+[node name="SaveButton" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TaskNameEdit/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Save"
+
+[node name="CancelButton" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TaskNameEdit/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Cancel"
 
 [node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox"]
 layout_mode = 2
@@ -155,6 +170,7 @@ Due Date (Hyperlink?)"
 layout_mode = 2
 size_flags_vertical = 3
 placeholder_text = "Asignment Info"
+wrap_mode = 1
 
 [node name="SubTasksScrollContainer" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox"]
 layout_mode = 2
@@ -170,7 +186,7 @@ hide_root = true
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="CourseTitleLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox" node_paths=PackedStringArray("editUI", "textEdit", "saveButton")]
+[node name="CourseTitleLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox" node_paths=PackedStringArray("editUI", "textEdit", "saveButton", "cancelButton")]
 layout_mode = 2
 focus_mode = 2
 bbcode_enabled = true
@@ -180,7 +196,8 @@ selection_enabled = true
 script = ExtResource("2_rx2n4")
 editUI = NodePath("../CourseTitleEdit")
 textEdit = NodePath("../CourseTitleEdit/VBoxContainer/CourseTitleTextEdit")
-saveButton = NodePath("../CourseTitleEdit/VBoxContainer/CourseTitleSaveButton")
+saveButton = NodePath("../CourseTitleEdit/VBoxContainer/HBoxContainer/SaveButton")
+cancelButton = NodePath("../CourseTitleEdit/VBoxContainer/HBoxContainer/CancelButton")
 
 [node name="CourseTitleEdit" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox"]
 visible = false
@@ -198,17 +215,31 @@ grow_vertical = 2
 [node name="CourseTitleTextEdit" type="TextEdit" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/CourseTitleEdit/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-text = "e"
-placeholder_text = "Assignment Name"
+placeholder_text = "Label Text"
+wrap_mode = 1
 
-[node name="CourseTitleSaveButton" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/CourseTitleEdit/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/CourseTitleEdit/VBoxContainer"]
 layout_mode = 2
-text = "Save Title"
+
+[node name="SaveButton" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/CourseTitleEdit/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Save"
+
+[node name="CancelButton" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/CourseTitleEdit/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Cancel"
 
 [node name="TextEdit" type="TextEdit" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox"]
 layout_mode = 2
 size_flags_vertical = 3
-placeholder_text = "Course Info"
+placeholder_text = "Course Notes (Professor Name, Office Hours, Phone Number, Email, etc)"
+wrap_mode = 1
+
+[node name="DeleteCourseButton" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox"]
+layout_mode = 2
+text = "Delete Course"
 
 [node name="SecondaryDisplay" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer"]
 layout_mode = 2
@@ -665,3 +696,11 @@ text = "Due: 11:59pm, March 15th, 2023"
 layout_mode = 2
 size_flags_vertical = 3
 placeholder_text = "Task Description Here"
+
+[node name="CompleteButton" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer"]
+layout_mode = 2
+text = "Mark Subtask As Complete"
+
+[node name="DeleteSubtask" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer"]
+layout_mode = 2
+text = "Delete Subtask"

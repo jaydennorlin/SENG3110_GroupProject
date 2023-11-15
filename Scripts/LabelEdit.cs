@@ -7,6 +7,7 @@ public partial class LabelEdit : RichTextLabel
     [Export] TextEdit textEdit;
     //If possible, replace save button with unhandled Input handler that grabs the Enter key.
     [Export] Button saveButton;
+    [Export] Button cancelButton;
 
     //I do not fully understand this Syntax yet, but it works.
     public event Action EditComplete = delegate { };
@@ -16,7 +17,8 @@ public partial class LabelEdit : RichTextLabel
 	{
         FocusEntered += EditStart;
         saveButton.Pressed += EditStop;
-	}
+        cancelButton.Pressed += CancelEdit;
+    }
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
