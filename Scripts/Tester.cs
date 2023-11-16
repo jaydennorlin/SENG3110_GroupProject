@@ -28,6 +28,11 @@ public partial class Tester : Node
     [Export] Control taskParentNode;
     [Export] LabelEdit taskTitleLabelEdit;
     [Export] RichTextLabel taskInfoLabel;
+    [Export] OptionButton taskHourOption;
+    [Export] OptionButton taskMinuteOption;
+    [Export] OptionButton taskMonthOption;
+    [Export] OptionButton taskDayOption;
+    [Export] OptionButton taskYearOption;
     [Export] TextEdit taskDescriptionArea;
     [Export] Button createSubtaskButton;
     [Export] Tree subtaskTree;
@@ -42,11 +47,6 @@ public partial class Tester : Node
 
     [ExportSubgroup("Subtask Editting Menu")]
     [Export] TextEdit subtaskTypeEdit;
-    [Export] OptionButton subtaskHourOption;
-    [Export] OptionButton subtaskMinuteOption;
-    [Export] OptionButton subtaskMonthOption;
-    [Export] OptionButton subtaskDayOption;
-    [Export] OptionButton subtaskYearOption;
     [Export] TextEdit subtaskDescriptionEdit;
 
 
@@ -132,13 +132,13 @@ public partial class Tester : Node
         secondaryTabBar.TabChanged += UpdateSecondaryDisplay;
 
         //Subtask Edit
-        subtaskTypeEdit.TextChanged += Subtask_UpdateType;
-        subtaskHourOption.ItemSelected += Subtask_UpdateDueDate_Hour;
-        subtaskMinuteOption.ItemSelected += Subtask_UpdateDueDate_Minute;
-        subtaskMonthOption.ItemSelected += Subtask_UpdateDueDate_Month;
-        subtaskDayOption.ItemSelected += Subtask_UpdateDueDate_Day;
-        subtaskYearOption.ItemSelected += Subtask_UpdateDueDate_Year;
-        subtaskDescriptionEdit.TextChanged += Subtask_UpdateDescription;
+        subtaskTypeEdit.TextChanged += PrimaryDisplay_UpdateType;
+        taskHourOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Hour;
+        taskMinuteOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Minute;
+        taskMonthOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Month;
+        taskDayOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Day;
+        taskYearOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Year;
+        subtaskDescriptionEdit.TextChanged += PrimaryDisplay_UpdateDescription;
 
         //Final Initialization.
         UpdateSecondaryDisplay(0);
@@ -457,6 +457,7 @@ public partial class Tester : Node
         //No other initial data needed?
         newTask.taskName = "New Task";
         newTask.course = course;
+        newTask.dueDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 59, 0).AddDays(1);
 
         course.tasks.Add(newTask);
         UpdateTree();
@@ -469,7 +470,9 @@ public partial class Tester : Node
         //Don't forget to add Due Date to this line.
         taskInfoLabel.Text = task.course.courseName + "\n Due Date Here";
 
-		taskDescriptionArea.Text = task.taskDescription;
+        PrimaryDisplay_SetTime(task.dueDate);
+
+        taskDescriptionArea.Text = task.taskDescription;
 
         GD.Print("Clear Tree");
         subtaskTree.Clear();
@@ -495,14 +498,14 @@ public partial class Tester : Node
 
                 string taskDesc = task.subtasks[i].taskDescription;
                 //Arbitrary limit.
-                if(taskDesc.Length > 25)
+                if(taskDesc.Length > 25 || taskDesc.Contains("\n"))
                 {
-                    taskDesc = taskDesc.Remove(22).Replace("\n", "") + "...";
+                    taskDesc = taskDesc.Remove(Mathf.Min(22, taskDesc.IndexOf("\n"))) + "...";
                 }
 
                 if(taskType.Length != 0)
                 {
-                    treeItem.SetText(0, taskType + ":" + taskDesc);
+                    treeItem.SetText(0, taskType + ": " + taskDesc);
                 }
                 else
                 {
@@ -534,9 +537,6 @@ public partial class Tester : Node
         TaskBase newTask = new TaskBase();
 
         newTask.taskDescription = "New Subtask";
-        newTask.dueDate = DateTime.Now;
-        newTask.dueDate.AddDays(1);
-        //TODO: set time to 11:59pm by default.
 
         int currentTab = primaryTabBar.CurrentTab;
         openTabs[currentTab].task.subtasks.Add(newTask);
@@ -577,8 +577,139 @@ public partial class Tester : Node
         secondaryTabBar.CurrentTab = 0;
         SubtaskEdit_Update(true);
     }
+
+    private void PrimaryDisplay_SetTime(DateTime time)
+    {
+        if (time.Hour < 12)
+        {
+            taskHourOption.Selected = time.Hour;
+        }
+        else
+        {
+            //The 12th item is used as a seperator, so we need to add 1 to the hour index to account for this.
+            taskHourOption.Selected = time.Hour + 1;
+        }
+
+        if (taskMinuteOption.ItemCount != 60)
+        {
+            taskMinuteOption.Clear();
+            for (int i = 0; i < 60; i++)
+            {
+                if (i < 10)
+                {
+                    taskMinuteOption.AddItem("0" + i);
+                }
+                else
+                {
+                    taskMinuteOption.AddItem(i.ToString());
+                }
+            }
+        }
+        taskMinuteOption.Selected = time.Minute;
+
+        taskMonthOption.Selected = time.Month - 1;
+
+        PrimaryDisplay_UpdateDateOptions(time.Year, time.Month);
+        taskDayOption.Selected = time.Day - 1;
+
+        //Adjust available options to be based on current term?
+        //subtaskYearOption.Selected
+    }
+
+    void PrimaryDisplay_UpdateDateOptions(int year, int month)
+    {
+        if (taskDayOption.ItemCount != DateTime.DaysInMonth(year, month))
+        {
+            GD.Print("Date update from " + taskDayOption.ItemCount + " to " + DateTime.DaysInMonth(year, month));
+            int selected = taskDayOption.Selected;
+            taskDayOption.Clear();
+
+            for (int i = 1; i <= DateTime.DaysInMonth(year, month); i++)
+            {
+                if (i < 10)
+                {
+                    taskDayOption.AddItem("0" + i);
+                }
+                else
+                {
+                    taskDayOption.AddItem(i.ToString());
+                }
+            }
+
+            taskDayOption.Selected = Mathf.Clamp(selected, 0, DateTime.DaysInMonth(year, month) - 1);
+        }
+    }
+
+    void PrimaryDisplay_UpdateType()
+    {
+        if (edittingTask != -1)
+        {
+            openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].taskType = subtaskTypeEdit.Text;
+        }
+
+        UpdatePrimaryDisplay(-1);
+    }
+
+    void PrimaryDisplay_UpdateDueDate_Hour(long hour)
+    {
+        DateTime time = openTabs[primaryTabBar.CurrentTab].task.dueDate;
+
+        if (hour > 12)
+        {
+            hour--;
+        }
+
+        time = new DateTime(time.Year, time.Month, time.Day, (int)hour, time.Minute, 0);
+
+        openTabs[primaryTabBar.CurrentTab].task.dueDate = time;
+    }
+
+    void PrimaryDisplay_UpdateDueDate_Minute(long minute)
+    {
+        DateTime time = openTabs[primaryTabBar.CurrentTab].task.dueDate;
+
+        time = new DateTime(time.Year, time.Month, time.Day, time.Hour, (int)minute, 0);
+
+        openTabs[primaryTabBar.CurrentTab].task.dueDate = time;
+    }
+
+    void PrimaryDisplay_UpdateDueDate_Month(long month)
+    {
+        DateTime time = openTabs[primaryTabBar.CurrentTab].task.dueDate;
+
+        //Months do not start indexing from 0.
+        PrimaryDisplay_UpdateDateOptions(time.Year, (int)month + 1);
+        time = new DateTime(time.Year, (int)month + 1, taskDayOption.Selected + 1, time.Hour, time.Minute, 0);
+
+        openTabs[primaryTabBar.CurrentTab].task.dueDate = time;
+    }
+
+    void PrimaryDisplay_UpdateDueDate_Day(long day)
+    {
+        DateTime time = openTabs[primaryTabBar.CurrentTab].task.dueDate;
+
+        time = new DateTime(time.Year, time.Month, (int)day, time.Hour, time.Minute, 0);
+
+        openTabs[primaryTabBar.CurrentTab].task.dueDate = time;
+    }
+
+    void PrimaryDisplay_UpdateDueDate_Year(long year)
+    {
+        GD.PrintErr("YEAR IS NOT YET IMPLEMENTED");
+    }
+
+    void PrimaryDisplay_UpdateDescription()
+    {
+        if (edittingTask != -1)
+        {
+            openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].taskDescription = subtaskDescriptionEdit.Text;
+        }
+
+        UpdatePrimaryDisplay(-1);
+    }
     #endregion
 
+    #region Secondary Display
     private void UpdateSecondaryDisplay(long selectedTab)
     {
         calendarNode.Visible = false;
@@ -621,7 +752,6 @@ public partial class Tester : Node
             secondaryTabBar.SetTabTitle(2, selectedTask.taskDescription);
 
             subtaskTypeEdit.Text = selectedTask.taskType;
-            SubtaskEdit_SetTime(selectedTask.dueDate);
             subtaskDescriptionEdit.Text = selectedTask.taskDescription;
 
             subtaskEditNode.Visible = true;
@@ -634,164 +764,7 @@ public partial class Tester : Node
             subtaskEditNode.Visible = false;
         }
     }
-
-    private void SubtaskEdit_SetTime(DateTime time)
-    {
-        if (time.Hour < 12)
-        {
-            subtaskHourOption.Selected = time.Hour;
-        }
-        else
-        {
-            //The 12th item is used as a seperator, so we need to add 1 to the hour index to account for this.
-            subtaskHourOption.Selected = time.Hour + 1;
-        }
-
-        if(subtaskMinuteOption.ItemCount != 60)
-        {
-            subtaskMinuteOption.Clear();
-            for (int i = 0; i < 60; i++)
-            {
-                if(i < 10)
-                {
-                    subtaskMinuteOption.AddItem("0" + i);
-                }
-                else
-                {
-                    subtaskMinuteOption.AddItem(i.ToString());
-                }
-            }
-        }
-        subtaskMinuteOption.Selected = time.Minute;
-
-        subtaskMonthOption.Selected = time.Month - 1;
-
-        SubtaskEdit_UpdateDateOptions(time.Year, time.Month);
-        subtaskDayOption.Selected = time.Day - 1;
-
-        //Adjust available options to be based on current term?
-        //subtaskYearOption.Selected
-    }
-
-    void SubtaskEdit_UpdateDateOptions(int year, int month)
-    {
-        if (subtaskDayOption.ItemCount != DateTime.DaysInMonth(year, month))
-        {
-            GD.Print("Date update from " + subtaskDayOption.ItemCount + " to " + DateTime.DaysInMonth(year, month));
-            int selected = subtaskDayOption.Selected;
-            subtaskDayOption.Clear();
-
-            for (int i = 1; i <= DateTime.DaysInMonth(year, month); i++)
-            {
-                if (i < 10)
-                {
-                    subtaskDayOption.AddItem("0" + i);
-                }
-                else
-                {
-                    subtaskDayOption.AddItem(i.ToString());
-                }
-            }
-
-            subtaskDayOption.Selected = Mathf.Clamp(selected, 0, DateTime.DaysInMonth(year, month) - 1);
-        }
-    }
-
-    void Subtask_UpdateType()
-    {
-        if (edittingTask != -1)
-        {
-            openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].taskType = subtaskTypeEdit.Text;
-        }
-
-        UpdatePrimaryDisplay(-1);
-    }
-
-    void Subtask_UpdateDueDate_Hour(long hour)
-    {
-        if (edittingTask != -1)
-        {
-            DateTime time = openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].dueDate;
-
-            if(hour > 12)
-            {
-                hour--;
-            }
-
-            time = new DateTime(time.Year, time.Month, time.Day, (int)hour, time.Minute, 0);
-
-            openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].dueDate = time;
-        }
-        else
-        {
-            GD.PrintErr("WARG");
-        }
-    }
-
-    void Subtask_UpdateDueDate_Minute(long minute)
-    {
-        if (edittingTask != -1)
-        {
-            DateTime time = openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].dueDate;
-
-            time = new DateTime(time.Year, time.Month, time.Day, time.Hour, (int)minute, 0);
-
-            openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].dueDate = time;
-        }
-        else
-        {
-            GD.PrintErr("WARG");
-        }
-    }
-
-    void Subtask_UpdateDueDate_Month(long month)
-    {
-        if (edittingTask != -1)
-        {
-            DateTime time = openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].dueDate;
-
-            //Months do not start indexing from 0.
-            SubtaskEdit_UpdateDateOptions(time.Year, (int)month + 1);
-            time = new DateTime(time.Year, (int)month + 1, subtaskDayOption.Selected + 1, time.Hour, time.Minute, 0);
-
-            openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].dueDate = time;
-        }
-        else
-        {
-            GD.PrintErr("WARG");
-        }
-    }
-
-    void Subtask_UpdateDueDate_Day(long day)
-    {
-        if (edittingTask != -1)
-        {
-            DateTime time = openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].dueDate;
-
-            time = new DateTime(time.Year, time.Month, (int)day, time.Hour, time.Minute, 0);
-
-            openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].dueDate = time;
-        }
-        else
-        {
-            GD.PrintErr("WARG");
-        }
-    }
-
-    void Subtask_UpdateDueDate_Year(long year)
-    {
-        GD.PrintErr("YEAR IS NOT YET IMPLEMENTED");
-    }
-
-    void Subtask_UpdateDescription()
-    {
-        if (edittingTask != -1)
-        {
-            openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].taskDescription = subtaskDescriptionEdit.Text;
-        }
-
-        UpdatePrimaryDisplay(-1);
-    }
+    #endregion
 }
 
 public class SortExample
@@ -805,7 +778,7 @@ public class SortExample
         public double value;
     }
 
-    public static List<TaskPlaceholder> SortTasks(TaskBase[] unsortedTasks)
+    public static List<TaskPlaceholder> SortTasks(PrimaryTask[] unsortedTasks)
     {
         List<TaskPlaceholder> unsortedList = new List<TaskPlaceholder>(unsortedTasks.Length);
 

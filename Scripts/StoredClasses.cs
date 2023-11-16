@@ -67,9 +67,6 @@ namespace AssignmentTracker {
         //Task Type could be Quiz, Midterm, Aiisgments, Project or Others
         public string taskType = "";
 
-        //Add due date.
-        public DateTime dueDate;
-
         //Two way connection, so a task alone knows what course its part of.
         public Course course;
 
@@ -87,6 +84,8 @@ namespace AssignmentTracker {
 
     public class PrimaryTask : TaskBase {
         public string taskName;
+
+        public DateTime dueDate;
 
         public List<TaskBase> subtasks = new List<TaskBase>();
 

@@ -11,7 +11,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("primaryTabBar", "termNameLabel", "createCourseButton", "coursesTree", "courseParentNode", "courseNameLabelEdit", "courseInfoArea", "createTaskButton", "deleteCourseButton", "taskParentNode", "taskTitleLabelEdit", "taskInfoLabel", "taskDescriptionArea", "createSubtaskButton", "subtaskTree", "deleteTaskButton", "secondaryTabBar", "calendarNode", "upcomingAssignmentsNode", "subtaskEditNode", "subtaskTypeEdit", "subtaskHourOption", "subtaskMinuteOption", "subtaskMonthOption", "subtaskDayOption", "subtaskYearOption", "subtaskDescriptionEdit")]
+[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("primaryTabBar", "termNameLabel", "createCourseButton", "coursesTree", "courseParentNode", "courseNameLabelEdit", "courseInfoArea", "createTaskButton", "deleteCourseButton", "taskParentNode", "taskTitleLabelEdit", "taskInfoLabel", "taskHourOption", "taskMinuteOption", "taskMonthOption", "taskDayOption", "taskYearOption", "taskDescriptionArea", "createSubtaskButton", "subtaskTree", "deleteTaskButton", "secondaryTabBar", "calendarNode", "upcomingAssignmentsNode", "subtaskEditNode", "subtaskTypeEdit", "subtaskDescriptionEdit")]
 script = ExtResource("1_5a2fi")
 primaryTabBar = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/ScrollContainer/TabBar")
 termNameLabel = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/RichTextLabel")
@@ -25,6 +25,11 @@ deleteCourseButton = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/Mai
 taskParentNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox")
 taskTitleLabelEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TaskNameLabel")
 taskInfoLabel = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/RichTextLabel")
+taskHourOption = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer/HourDropdown")
+taskMinuteOption = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer/MinuteDropdown")
+taskMonthOption = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer/MonthDropdown")
+taskDayOption = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer/DateDropdown")
+taskYearOption = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer/YearDropdown")
 taskDescriptionArea = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TextEdit")
 createSubtaskButton = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/CreateSubtaskButton")
 subtaskTree = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/SubTasksScrollContainer/SubTasksTree")
@@ -34,11 +39,6 @@ calendarNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/Secondary
 upcomingAssignmentsNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll")
 subtaskEditNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll")
 subtaskTypeEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/TaskTypeEdit")
-subtaskHourOption = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/HBoxContainer/HourDropdown")
-subtaskMinuteOption = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/HBoxContainer/MinuteDropdown")
-subtaskMonthOption = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/HBoxContainer/MonthDropdown")
-subtaskDayOption = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/HBoxContainer/DateDropdown")
-subtaskYearOption = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/HBoxContainer/YearDropdown")
 subtaskDescriptionEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/TaskDescriptionEdit")
 
 [node name="LayoutScaler" type="Control" parent="."]
@@ -168,10 +168,142 @@ text = "Cancel"
 
 [node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox"]
 layout_mode = 2
-size_flags_vertical = 3
 bbcode_enabled = true
-text = "Course Name
-Due Date (Hyperlink?)"
+text = "Course Name"
+fit_content = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox"]
+layout_mode = 2
+
+[node name="CalendarButton" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer"]
+layout_mode = 2
+text = "View"
+
+[node name="HourDropdown" type="OptionButton" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer"]
+layout_mode = 2
+item_count = 25
+selected = 0
+allow_reselect = true
+popup/item_0/text = "00"
+popup/item_0/id = 0
+popup/item_1/text = "01"
+popup/item_1/id = 1
+popup/item_2/text = "02"
+popup/item_2/id = 2
+popup/item_3/text = "03"
+popup/item_3/id = 3
+popup/item_4/text = "04"
+popup/item_4/id = 4
+popup/item_5/text = "05"
+popup/item_5/id = 5
+popup/item_6/text = "06"
+popup/item_6/id = 6
+popup/item_7/text = "07"
+popup/item_7/id = 7
+popup/item_8/text = "08"
+popup/item_8/id = 8
+popup/item_9/text = "09"
+popup/item_9/id = 9
+popup/item_10/text = "10"
+popup/item_10/id = 10
+popup/item_11/text = "11"
+popup/item_11/id = 11
+popup/item_12/text = "AM"
+popup/item_12/id = 12
+popup/item_12/separator = true
+popup/item_13/text = "12"
+popup/item_13/id = 13
+popup/item_14/text = "13"
+popup/item_14/id = 14
+popup/item_15/text = "14"
+popup/item_15/id = 15
+popup/item_16/text = "15"
+popup/item_16/id = 16
+popup/item_17/text = "16"
+popup/item_17/id = 17
+popup/item_18/text = "17"
+popup/item_18/id = 18
+popup/item_19/text = "18"
+popup/item_19/id = 19
+popup/item_20/text = "19"
+popup/item_20/id = 20
+popup/item_21/text = "20"
+popup/item_21/id = 21
+popup/item_22/text = "21"
+popup/item_22/id = 22
+popup/item_23/text = "22"
+popup/item_23/id = 23
+popup/item_24/text = "23"
+popup/item_24/id = 24
+
+[node name="MinuteDropdown" type="OptionButton" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer"]
+layout_mode = 2
+item_count = 1
+selected = 0
+allow_reselect = true
+popup/item_0/text = "00"
+popup/item_0/id = 0
+
+[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "-"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MonthDropdown" type="OptionButton" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer"]
+layout_mode = 2
+item_count = 12
+selected = 0
+allow_reselect = true
+popup/item_0/text = "Jan"
+popup/item_0/id = 0
+popup/item_1/text = "Feb"
+popup/item_1/id = 1
+popup/item_2/text = "Mar"
+popup/item_2/id = 2
+popup/item_3/text = "Apr"
+popup/item_3/id = 3
+popup/item_4/text = "May"
+popup/item_4/id = 4
+popup/item_5/text = "Jun"
+popup/item_5/id = 5
+popup/item_6/text = "Jul"
+popup/item_6/id = 6
+popup/item_7/text = "Aug"
+popup/item_7/id = 7
+popup/item_8/text = "Sep"
+popup/item_8/id = 8
+popup/item_9/text = "Oct"
+popup/item_9/id = 9
+popup/item_10/text = "Nov"
+popup/item_10/id = 10
+popup/item_11/text = "Dec"
+popup/item_11/id = 11
+
+[node name="DateDropdown" type="OptionButton" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer"]
+layout_mode = 2
+item_count = 1
+selected = 0
+allow_reselect = true
+popup/item_0/text = "00"
+popup/item_0/id = 0
+
+[node name="YearDropdown" type="OptionButton" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer"]
+layout_mode = 2
+item_count = 1
+selected = 0
+allow_reselect = true
+popup/item_0/text = "20XX"
+popup/item_0/id = 0
 
 [node name="TextEdit" type="TextEdit" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox"]
 layout_mode = 2
@@ -707,135 +839,6 @@ custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 size_flags_vertical = 0
 placeholder_text = "Task Type (Optional)"
-
-[node name="HBoxContainer" type="HBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer"]
-layout_mode = 2
-
-[node name="HourDropdown" type="OptionButton" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-item_count = 25
-selected = 0
-allow_reselect = true
-popup/item_0/text = "00"
-popup/item_0/id = 0
-popup/item_1/text = "01"
-popup/item_1/id = 1
-popup/item_2/text = "02"
-popup/item_2/id = 2
-popup/item_3/text = "03"
-popup/item_3/id = 3
-popup/item_4/text = "04"
-popup/item_4/id = 4
-popup/item_5/text = "05"
-popup/item_5/id = 5
-popup/item_6/text = "06"
-popup/item_6/id = 6
-popup/item_7/text = "07"
-popup/item_7/id = 7
-popup/item_8/text = "08"
-popup/item_8/id = 8
-popup/item_9/text = "09"
-popup/item_9/id = 9
-popup/item_10/text = "10"
-popup/item_10/id = 10
-popup/item_11/text = "11"
-popup/item_11/id = 11
-popup/item_12/text = "AM"
-popup/item_12/id = 12
-popup/item_12/separator = true
-popup/item_13/text = "12"
-popup/item_13/id = 13
-popup/item_14/text = "13"
-popup/item_14/id = 14
-popup/item_15/text = "14"
-popup/item_15/id = 15
-popup/item_16/text = "15"
-popup/item_16/id = 16
-popup/item_17/text = "16"
-popup/item_17/id = 17
-popup/item_18/text = "17"
-popup/item_18/id = 18
-popup/item_19/text = "18"
-popup/item_19/id = 19
-popup/item_20/text = "19"
-popup/item_20/id = 20
-popup/item_21/text = "20"
-popup/item_21/id = 21
-popup/item_22/text = "21"
-popup/item_22/id = 22
-popup/item_23/text = "22"
-popup/item_23/id = 23
-popup/item_24/text = "23"
-popup/item_24/id = 24
-
-[node name="MinuteDropdown" type="OptionButton" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-item_count = 1
-selected = 0
-allow_reselect = true
-popup/item_0/text = "00"
-popup/item_0/id = 0
-
-[node name="Panel" type="Panel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Label" type="Label" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/HBoxContainer/Panel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "-"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="MonthDropdown" type="OptionButton" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-item_count = 12
-selected = 0
-allow_reselect = true
-popup/item_0/text = "Jan"
-popup/item_0/id = 0
-popup/item_1/text = "Feb"
-popup/item_1/id = 1
-popup/item_2/text = "Mar"
-popup/item_2/id = 2
-popup/item_3/text = "Apr"
-popup/item_3/id = 3
-popup/item_4/text = "May"
-popup/item_4/id = 4
-popup/item_5/text = "Jun"
-popup/item_5/id = 5
-popup/item_6/text = "Jul"
-popup/item_6/id = 6
-popup/item_7/text = "Aug"
-popup/item_7/id = 7
-popup/item_8/text = "Sep"
-popup/item_8/id = 8
-popup/item_9/text = "Oct"
-popup/item_9/id = 9
-popup/item_10/text = "Nov"
-popup/item_10/id = 10
-popup/item_11/text = "Dec"
-popup/item_11/id = 11
-
-[node name="DateDropdown" type="OptionButton" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-item_count = 1
-selected = 0
-allow_reselect = true
-popup/item_0/text = "00"
-popup/item_0/id = 0
-
-[node name="YearDropdown" type="OptionButton" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-item_count = 1
-selected = 0
-allow_reselect = true
-popup/item_0/text = "20XX"
-popup/item_0/id = 0
 
 [node name="TaskDescriptionEdit" type="TextEdit" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer"]
 layout_mode = 2
