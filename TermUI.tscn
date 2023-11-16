@@ -23,7 +23,7 @@ courseInfoArea = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDis
 createTaskButton = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/CreateTaskButton")
 deleteCourseButton = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/DeleteCourseButton")
 taskParentNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox")
-taskTitleLabelEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TaskNameLabel")
+taskTitleLabelEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer2/TaskNameLabel")
 taskInfoLabel = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/RichTextLabel")
 taskHourOption = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer/HourDropdown")
 taskMinuteOption = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer/MinuteDropdown")
@@ -33,7 +33,7 @@ taskYearOption = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDis
 taskDescriptionArea = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TextEdit")
 createSubtaskButton = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/CreateSubtaskButton")
 subtaskTree = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/SubTasksScrollContainer/SubTasksTree")
-deleteTaskButton = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/DeleteTaskButton")
+deleteTaskButton = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer2/DeleteTaskButton")
 secondaryTabBar = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TabScroll/TabBar")
 calendarNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll")
 upcomingAssignmentsNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll")
@@ -118,11 +118,16 @@ tab_1/title = "Example Tab 2"
 tab_2/title = "Example Tab 3"
 
 [node name="TaskVBox" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2"]
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="TaskNameLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox" node_paths=PackedStringArray("editUI", "textEdit", "saveButton", "cancelButton")]
+[node name="HBoxContainer2" type="HBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox"]
 layout_mode = 2
+
+[node name="TaskNameLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer2" node_paths=PackedStringArray("displayUI", "editUI", "textEdit", "saveButton", "cancelButton")]
+layout_mode = 2
+size_flags_horizontal = 3
 focus_mode = 2
 bbcode_enabled = true
 text = "[font_size=20]Task Name"
@@ -130,14 +135,20 @@ fit_content = true
 context_menu_enabled = true
 selection_enabled = true
 script = ExtResource("2_rx2n4")
-editUI = NodePath("../TaskNameEdit")
-textEdit = NodePath("../TaskNameEdit/VBoxContainer/TaskNameTextEdit")
-saveButton = NodePath("../TaskNameEdit/VBoxContainer/HBoxContainer/SaveButton")
-cancelButton = NodePath("../TaskNameEdit/VBoxContainer/HBoxContainer/CancelButton")
+displayUI = NodePath("..")
+editUI = NodePath("../../TaskNameEdit")
+textEdit = NodePath("../../TaskNameEdit/VBoxContainer/TaskNameTextEdit")
+saveButton = NodePath("../../TaskNameEdit/VBoxContainer/HBoxContainer/SaveButton")
+cancelButton = NodePath("../../TaskNameEdit/VBoxContainer/HBoxContainer/CancelButton")
+
+[node name="DeleteTaskButton" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer2"]
+layout_mode = 2
+text = "Delete Task"
 
 [node name="TaskNameEdit" type="Control" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox"]
 visible = false
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/TaskNameEdit"]
@@ -325,16 +336,12 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 hide_root = true
 
-[node name="DeleteTaskButton" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox"]
-layout_mode = 2
-text = "Delete Task"
-
 [node name="CourseVBox" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2"]
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="CourseTitleLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox" node_paths=PackedStringArray("editUI", "textEdit", "saveButton", "cancelButton")]
+[node name="CourseTitleLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox" node_paths=PackedStringArray("displayUI", "editUI", "textEdit", "saveButton", "cancelButton")]
 layout_mode = 2
 focus_mode = 2
 bbcode_enabled = true
@@ -342,6 +349,7 @@ text = "Course Name"
 fit_content = true
 selection_enabled = true
 script = ExtResource("2_rx2n4")
+displayUI = NodePath(".")
 editUI = NodePath("../CourseTitleEdit")
 textEdit = NodePath("../CourseTitleEdit/VBoxContainer/CourseTitleTextEdit")
 saveButton = NodePath("../CourseTitleEdit/VBoxContainer/HBoxContainer/SaveButton")

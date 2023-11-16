@@ -332,6 +332,11 @@ public partial class Tester : Node
                 }
             }
         }
+        else
+        {
+            courseParentNode.Hide();
+            taskParentNode.Hide();
+        }
     }
 
     //No idea why, but Godot always seems to use the largest datatype available, even when it's totally unreasonable to.
@@ -392,6 +397,8 @@ public partial class Tester : Node
 
         //Rework this later to use the entire array. Or change it to just be a single string.
         courseInfoArea.Text = course.notes;
+
+        secondaryTabBar.SetTabDisabled(2, true);
     }
 
     private void Course_UpdateTitle()
@@ -467,11 +474,8 @@ public partial class Tester : Node
     public void Task_UpdateDisplay(PrimaryTask task)
 	{
         taskTitleLabelEdit.Text = task.taskName;
-        //Don't forget to add Due Date to this line.
-        taskInfoLabel.Text = task.course.courseName + "\n Due Date Here";
-
+        taskInfoLabel.Text = task.course.courseName;
         PrimaryDisplay_SetTime(task.dueDate);
-
         taskDescriptionArea.Text = task.taskDescription;
 
         GD.Print("Clear Tree");
@@ -500,7 +504,13 @@ public partial class Tester : Node
                 //Arbitrary limit.
                 if(taskDesc.Length > 25 || taskDesc.Contains("\n"))
                 {
-                    taskDesc = taskDesc.Remove(Mathf.Min(22, taskDesc.IndexOf("\n"))) + "...";
+                    int removeIndex = 22;
+                    if (taskDesc.Contains("\n"))
+                    {
+                        removeIndex = Mathf.Min(22, taskDesc.IndexOf("\n"));
+                    }
+
+                    taskDesc = taskDesc.Remove(removeIndex) + "...";
                 }
 
                 if(taskType.Length != 0)
@@ -512,6 +522,15 @@ public partial class Tester : Node
                     treeItem.SetText(0, taskDesc);
                 }
             }
+        }
+
+        if(task.subtasks.Count != 0)
+        {
+            secondaryTabBar.SetTabDisabled(2, false);
+        }
+        else
+        {
+            secondaryTabBar.SetTabDisabled(2, true);
         }
     }
 

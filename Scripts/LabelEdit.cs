@@ -3,6 +3,7 @@ using System;
 
 public partial class LabelEdit : RichTextLabel
 {
+	[Export] Control displayUI;
 	[Export] Control editUI;
     [Export] TextEdit textEdit;
     //If possible, replace save button with unhandled Input handler that grabs the Enter key.
@@ -27,7 +28,7 @@ public partial class LabelEdit : RichTextLabel
 
     void EditStart()
     {
-        Hide();
+        displayUI.Hide();
         editUI.Show();
 
         textEdit.Text = Text;
@@ -36,13 +37,13 @@ public partial class LabelEdit : RichTextLabel
     //These three are poorly thought out. Fix later.
     public void CancelEdit()
     {
-        Show();
+        displayUI.Show();
         editUI.Hide();
     }
 
     void EditStop()
     {
-        Show();
+        displayUI.Show();
         editUI.Hide();
 
         Text = textEdit.Text;
