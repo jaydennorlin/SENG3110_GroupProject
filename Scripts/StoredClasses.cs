@@ -61,11 +61,11 @@ namespace AssignmentTracker {
     }
 
     public class TaskBase {
+        public short completion = 0;
         public string taskDescription;
 
         //Task Type could be Quiz, Midterm, Aiisgments, Project or Others
-        //You may want to implement this by 
-        public string taskType;
+        public string taskType = "";
 
         //Add due date.
         public DateTime dueDate;
@@ -95,10 +95,15 @@ namespace AssignmentTracker {
             this.taskName = taskName;
             this.course = course;
         }
+
+        public PrimaryTask()
+        {
+
+        }
     }
 
-    public class Subtask : TaskBase {
+    /*public class Subtask : TaskBase {
         //Have primary task to look up. Do we need this one?
         public PrimaryTask primaryTask;
-    }
+    }*/
 }

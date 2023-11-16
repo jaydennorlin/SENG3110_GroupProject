@@ -3,6 +3,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 
 public partial class Tester : Node
 {
@@ -19,6 +20,7 @@ public partial class Tester : Node
     [Export] Control courseParentNode;
     [Export] LabelEdit courseNameLabelEdit;
     [Export] TextEdit courseInfoArea;
+    [Export] Button createTaskButton;
     [Export] Button deleteCourseButton;
 
     [ExportGroup("Task Fields")]
@@ -26,8 +28,10 @@ public partial class Tester : Node
     [Export] LabelEdit taskTitleLabelEdit;
     [Export] RichTextLabel taskInfoLabel;
     [Export] TextEdit taskDescriptionArea;
+    [Export] Button createSubtaskButton;
     [Export] Tree subtaskTree;
     TreeItem subtaskTreeRoot;
+    [Export] Button deleteTaskButton;
 
     [ExportGroup("Secondary Display")]
     [Export] TabBar secondaryTabBar;
@@ -100,7 +104,7 @@ public partial class Tester : Node
         }
 
         //Primary/Generic Events
-        coursesTree.CellSelected += Course_AddToTabBar;
+        coursesTree.CellSelected += OpenTab;
 
         primaryTabBar.TabChanged += UpdatePrimaryDisplay;
         primaryTabBar.TabClosePressed += TabRemoved;
@@ -109,12 +113,15 @@ public partial class Tester : Node
         //Course Events
         courseNameLabelEdit.EditComplete += Course_UpdateTitle;
         courseInfoArea.TextChanged += Course_UpdateDescription;
-        deleteCourseButton.Pressed += Course_Delete_Popup;
+        createTaskButton.Pressed += CreateNewTask;
+        deleteCourseButton.Pressed += Course_DeleteConfirmPopup;
 
         //Task Events
         taskTitleLabelEdit.EditComplete += Task_UpdateTitle;
         taskDescriptionArea.TextChanged += Task_UpdateDescription;
+        createSubtaskButton.Pressed += CreateSubtask;
         subtaskTree.CellSelected += SubtaskEdit_Update;
+        deleteTaskButton.Pressed += Task_DeleteConfirmPopup;
 
         //Secondary Display Events
         secondaryTabBar.TabChanged += UpdateSecondaryDisplay;
@@ -150,27 +157,10 @@ public partial class Tester : Node
         }*/
     }
 
-    #region Initialization
-    public void AddCourseToTree(Course course, bool select = false)
+    // Called every frame. 'delta' is the elapsed time since the previous frame.
+    public override void _Process(double delta)
     {
-        if (coursesTreeRoot == null)
-        {
-            coursesTreeRoot = coursesTree.CreateItem();
-        }
-
-        TreeItem courseTreeItem = coursesTree.CreateItem(coursesTreeRoot);
-        courseTreeItem.SetText(0, course.courseName);
-
-        for (int i = 0; i < course.tasks.Count; i++)
-        {
-            TreeItem item = coursesTree.CreateItem(courseTreeItem);
-            item.SetText(0, course.tasks[i].taskName);
-        }
-
-        if (select)
-        {
-            coursesTree.SetSelected(courseTreeItem, 0);
-        }
+        //Save once every few frames?
     }
 
     public void UpdateTree()
@@ -205,45 +195,82 @@ public partial class Tester : Node
             }
         }*/
     }
-    #endregion
 
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
+    public void AddCourseToTree(Course course, bool select = false)
     {
-        //Save once every few frames?
+        if (coursesTreeRoot == null)
+        {
+            coursesTreeRoot = coursesTree.CreateItem();
+        }
+
+        TreeItem courseTreeItem = coursesTree.CreateItem(coursesTreeRoot);
+        courseTreeItem.SetText(0, course.courseName);
+
+        for (int i = 0; i < course.tasks.Count; i++)
+        {
+            TreeItem item = coursesTree.CreateItem(courseTreeItem);
+            item.SetText(0, course.tasks[i].taskName);
+        }
+
+        if (select)
+        {
+            coursesTree.SetSelected(courseTreeItem, 0);
+        }
     }
 
+
     //Consider using MouseButtonIndex to bring up a context menu that lets you create a new task/course?
-    private void Course_AddToTabBar()
+    private void OpenTab()
     {
         TreeItem selecteditem = coursesTree.GetSelected();
 
         if (selecteditem != null)
         {
-            TabItem createdItem;
-
             //Courses are childed to the root of the tree, so the selected TreeItem must be a course.
             if (selecteditem.GetParent() == coursesTreeRoot)
             {
-                createdItem = new TabItem(false, null, activeTerm.courses[selecteditem.GetIndex()]);
+                OpenCourseTab(activeTerm.courses[selecteditem.GetIndex()]);
             }
             else
             {
-                createdItem = new TabItem(true, activeTerm.courses[selecteditem.GetParent().GetIndex()].tasks[selecteditem.GetIndex()], null);
+                OpenTaskTab(activeTerm.courses[selecteditem.GetParent().GetIndex()].tasks[selecteditem.GetIndex()]);
             }
+        }
+    }
 
-            int alreadyExists = openTabs.IndexOf(createdItem);
+    void OpenTaskTab(PrimaryTask task)
+    {
+        TabItem createdItem = new TabItem(true, task, null);
 
-            if (alreadyExists == -1)
-            {
-                openTabs.Add(createdItem);
-                UpdateOpenTabs();
-                primaryTabBar.CurrentTab = openTabs.Count - 1;
-            }
-            else
-            {
-                primaryTabBar.CurrentTab = alreadyExists;
-            }
+        int alreadyExists = openTabs.IndexOf(createdItem);
+
+        if (alreadyExists == -1)
+        {
+            openTabs.Add(createdItem);
+            UpdateOpenTabs();
+            primaryTabBar.CurrentTab = openTabs.Count - 1;
+        }
+        else
+        {
+            primaryTabBar.CurrentTab = alreadyExists;
+        }
+    }
+
+    void OpenCourseTab(Course course)
+    {
+        TabItem createdItem = new TabItem(false, null, course);
+
+        int alreadyExists = openTabs.IndexOf(createdItem);
+
+        if (alreadyExists == -1)
+        {
+            openTabs.Add(createdItem);
+            UpdateOpenTabs();
+            primaryTabBar.CurrentTab = openTabs.Count - 1;
+        }
+        else
+        {
+            primaryTabBar.CurrentTab = alreadyExists;
         }
     }
 
@@ -330,8 +357,11 @@ public partial class Tester : Node
         //Cancel all current open label edits.
         taskTitleLabelEdit.CancelEdit();
         courseNameLabelEdit.CancelEdit();
+
+        UpdateSecondaryDisplay(secondaryTabBar.CurrentTab);
     }
 
+    #region Course Methods
     public void CreateNewCourse()
     {
         Course newCourse = new Course();
@@ -341,7 +371,7 @@ public partial class Tester : Node
 
         activeTerm.courses.Add(newCourse);
         AddCourseToTree(newCourse, true);
-        Course_AddToTabBar();
+        OpenTab();
     }
 
     public void Course_UpdateDisplay(Course course)
@@ -364,7 +394,7 @@ public partial class Tester : Node
         openTabs[primaryTabBar.CurrentTab].course.notes = courseInfoArea.Text;
     }
 
-    private void Course_Delete_Popup()
+    private void Course_DeleteConfirmPopup()
     {
         ConfirmationDialog dialog = new ConfirmationDialog();
         AddChild(dialog);
@@ -402,6 +432,23 @@ public partial class Tester : Node
 
         UpdateOpenTabs();
         UpdateTree();
+    }
+    #endregion
+
+    #region TaskMethods
+    public void CreateNewTask()
+    {
+        Course course = openTabs[primaryTabBar.CurrentTab].course;
+
+        PrimaryTask newTask = new PrimaryTask();
+
+        //No other initial data needed?
+        newTask.taskName = "New Task";
+        newTask.course = course;
+
+        course.tasks.Add(newTask);
+        UpdateTree();
+        OpenTaskTab(newTask);
     }
 
     public void Task_UpdateDisplay(PrimaryTask task)
@@ -441,7 +488,14 @@ public partial class Tester : Node
                     taskDesc = taskDesc.Remove(22).Replace("\n", "") + "...";
                 }
 
-                treeItem.SetText(0, taskType + ":" + taskDesc);
+                if(taskType.Length != 0)
+                {
+                    treeItem.SetText(0, taskType + ":" + taskDesc);
+                }
+                else
+                {
+                    treeItem.SetText(0, taskDesc);
+                }
             }
         }
     }
@@ -463,6 +517,52 @@ public partial class Tester : Node
         openTabs[primaryTabBar.CurrentTab].task.taskDescription = taskDescriptionArea.Text;
     }
 
+    private void CreateSubtask()
+    {
+        TaskBase newTask = new TaskBase();
+
+        newTask.taskDescription = "New Subtask";
+        newTask.dueDate = DateTime.Now;
+        newTask.dueDate.AddDays(1);
+        //TODO: set time to 11:59pm by default.
+
+        openTabs[primaryTabBar.CurrentTab].task.subtasks.Add(newTask);
+
+        UpdateOpenTabs();
+        GD.Print("Updating display with " + openTabs[primaryTabBar.CurrentTab].task.taskName);
+        Task_UpdateDisplay(openTabs[primaryTabBar.CurrentTab].task);
+
+        subtaskTree.SetSelected(subtaskTreeRoot.GetChild(subtaskTreeRoot.GetChildCount() - 1), 0);
+    }
+
+    private void Task_DeleteConfirmPopup()
+    {
+        ConfirmationDialog dialog = new ConfirmationDialog();
+        AddChild(dialog);
+
+        dialog.Confirmed += Task_Delete;
+
+        //Consider finding some way of avoiding this. Investigate Obsidian/System Trash method, and file structure serializaliation.
+        dialog.Title = openTabs[primaryTabBar.CurrentTab].task.taskName + " WILL BE PERMANENTLY DELETED.";
+
+        dialog.Popup();
+    }
+
+    void Task_Delete()
+    {
+        //Validate that this results in it being properly removed.
+        PrimaryTask toBeRemoved = openTabs[primaryTabBar.CurrentTab].task;
+        openTabs.RemoveAt(primaryTabBar.CurrentTab);
+
+        toBeRemoved.course.tasks.Remove(toBeRemoved);
+
+        UpdateOpenTabs();
+        UpdateTree();
+
+        SubtaskEdit_Update(true);
+    }
+    #endregion
+
     private void UpdateSecondaryDisplay(long selectedTab)
     {
         calendarNode.Visible = false;
@@ -480,19 +580,26 @@ public partial class Tester : Node
         }
         else
         {
-            subtaskEditNode.Visible = true;
+            //subtaskEditNode.Visible = true;
+            SubtaskEdit_Update();
         }
     }
 
     private void SubtaskEdit_Update()
     {
-        secondaryTabBar.CurrentTab = 2;
+        SubtaskEdit_Update(false);
+    }
 
+    private void SubtaskEdit_Update(bool forceClearSubtask)
+    {
         TreeItem selecteditem = subtaskTree.GetSelected();
-        edittingTask = selecteditem.GetIndex();
 
-        if (selecteditem != null)
+        if (selecteditem != null && !forceClearSubtask)
         {
+            secondaryTabBar.CurrentTab = 2;
+            edittingTask = selecteditem.GetIndex();
+
+            //This throws an error when a Task with a currently open subtask is deleted, but it gets caught immediately and has no visible effect.
             TaskBase selectedTask = openTabs[primaryTabBar.CurrentTab].task.subtasks[selecteditem.GetIndex()];
 
             //Make this more accurate later.
@@ -501,6 +608,14 @@ public partial class Tester : Node
             subtaskTypeEdit.Text = selectedTask.taskType;
             subtaskDueDateButton.Text = selectedTask.dueDate.ToString();
             subtaskDescriptionEdit.Text = selectedTask.taskDescription;
+
+            subtaskEditNode.Visible = true;
+        }
+        else
+        {
+            secondaryTabBar.SetTabTitle(2, "No Subtask Selected");
+
+            subtaskEditNode.Visible = false;
         }
     }
 
