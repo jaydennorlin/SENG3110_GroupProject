@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using static Godot.Time;
 
 public partial class Tester : Node
 {
@@ -41,7 +42,11 @@ public partial class Tester : Node
 
     [ExportSubgroup("Subtask Editting Menu")]
     [Export] TextEdit subtaskTypeEdit;
-    [Export] Button subtaskDueDateButton;
+    [Export] OptionButton subtaskHourOption;
+    [Export] OptionButton subtaskMinuteOption;
+    [Export] OptionButton subtaskMonthOption;
+    [Export] OptionButton subtaskDayOption;
+    [Export] OptionButton subtaskYearOption;
     [Export] TextEdit subtaskDescriptionEdit;
 
 
@@ -128,7 +133,11 @@ public partial class Tester : Node
 
         //Subtask Edit
         subtaskTypeEdit.TextChanged += Subtask_UpdateType;
-        subtaskDueDateButton.Pressed += Subtask_UpdateDueDate;
+        subtaskHourOption.ItemSelected += Subtask_UpdateDueDate_Hour;
+        subtaskMinuteOption.ItemSelected += Subtask_UpdateDueDate_Minute;
+        subtaskMonthOption.ItemSelected += Subtask_UpdateDueDate_Month;
+        subtaskDayOption.ItemSelected += Subtask_UpdateDueDate_Day;
+        subtaskYearOption.ItemSelected += Subtask_UpdateDueDate_Year;
         subtaskDescriptionEdit.TextChanged += Subtask_UpdateDescription;
 
         //Final Initialization.
@@ -612,7 +621,7 @@ public partial class Tester : Node
             secondaryTabBar.SetTabTitle(2, selectedTask.taskDescription);
 
             subtaskTypeEdit.Text = selectedTask.taskType;
-            subtaskDueDateButton.Text = selectedTask.dueDate.ToString();
+            SubtaskEdit_SetTime(selectedTask.dueDate);
             subtaskDescriptionEdit.Text = selectedTask.taskDescription;
 
             subtaskEditNode.Visible = true;
@@ -626,6 +635,68 @@ public partial class Tester : Node
         }
     }
 
+    private void SubtaskEdit_SetTime(DateTime time)
+    {
+        if (time.Hour < 12)
+        {
+            subtaskHourOption.Selected = time.Hour;
+        }
+        else
+        {
+            //The 12th item is used as a seperator, so we need to add 1 to the hour index to account for this.
+            subtaskHourOption.Selected = time.Hour + 1;
+        }
+
+        if(subtaskMinuteOption.ItemCount != 60)
+        {
+            subtaskMinuteOption.Clear();
+            for (int i = 0; i < 60; i++)
+            {
+                if(i < 10)
+                {
+                    subtaskMinuteOption.AddItem("0" + i);
+                }
+                else
+                {
+                    subtaskMinuteOption.AddItem(i.ToString());
+                }
+            }
+        }
+        subtaskMinuteOption.Selected = time.Minute;
+
+        subtaskMonthOption.Selected = time.Month - 1;
+
+        SubtaskEdit_UpdateDateOptions(time.Year, time.Month);
+        subtaskDayOption.Selected = time.Day - 1;
+
+        //Adjust available options to be based on current term?
+        //subtaskYearOption.Selected
+    }
+
+    void SubtaskEdit_UpdateDateOptions(int year, int month)
+    {
+        if (subtaskDayOption.ItemCount != DateTime.DaysInMonth(year, month))
+        {
+            GD.Print("Date update from " + subtaskDayOption.ItemCount + " to " + DateTime.DaysInMonth(year, month));
+            int selected = subtaskDayOption.Selected;
+            subtaskDayOption.Clear();
+
+            for (int i = 1; i <= DateTime.DaysInMonth(year, month); i++)
+            {
+                if (i < 10)
+                {
+                    subtaskDayOption.AddItem("0" + i);
+                }
+                else
+                {
+                    subtaskDayOption.AddItem(i.ToString());
+                }
+            }
+
+            subtaskDayOption.Selected = Mathf.Clamp(selected, 0, DateTime.DaysInMonth(year, month) - 1);
+        }
+    }
+
     void Subtask_UpdateType()
     {
         if (edittingTask != -1)
@@ -636,15 +707,80 @@ public partial class Tester : Node
         UpdatePrimaryDisplay(-1);
     }
 
-    void Subtask_UpdateDueDate()
+    void Subtask_UpdateDueDate_Hour(long hour)
     {
         if (edittingTask != -1)
         {
-            //Add the ability for the user to select a due date once the button is pressed.
-            //Alternatively, swap the button out for a dropdown?
+            DateTime time = openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].dueDate;
 
-            //openTabs[primaryTabBar.CurrentTab].task.subtasks[selecteditem.GetIndex()].dueDate;
+            if(hour > 12)
+            {
+                hour--;
+            }
+
+            time = new DateTime(time.Year, time.Month, time.Day, (int)hour, time.Minute, 0);
+
+            openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].dueDate = time;
         }
+        else
+        {
+            GD.PrintErr("WARG");
+        }
+    }
+
+    void Subtask_UpdateDueDate_Minute(long minute)
+    {
+        if (edittingTask != -1)
+        {
+            DateTime time = openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].dueDate;
+
+            time = new DateTime(time.Year, time.Month, time.Day, time.Hour, (int)minute, 0);
+
+            openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].dueDate = time;
+        }
+        else
+        {
+            GD.PrintErr("WARG");
+        }
+    }
+
+    void Subtask_UpdateDueDate_Month(long month)
+    {
+        if (edittingTask != -1)
+        {
+            DateTime time = openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].dueDate;
+
+            //Months do not start indexing from 0.
+            SubtaskEdit_UpdateDateOptions(time.Year, (int)month + 1);
+            time = new DateTime(time.Year, (int)month + 1, subtaskDayOption.Selected + 1, time.Hour, time.Minute, 0);
+
+            openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].dueDate = time;
+        }
+        else
+        {
+            GD.PrintErr("WARG");
+        }
+    }
+
+    void Subtask_UpdateDueDate_Day(long day)
+    {
+        if (edittingTask != -1)
+        {
+            DateTime time = openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].dueDate;
+
+            time = new DateTime(time.Year, time.Month, (int)day, time.Hour, time.Minute, 0);
+
+            openTabs[primaryTabBar.CurrentTab].task.subtasks[edittingTask].dueDate = time;
+        }
+        else
+        {
+            GD.PrintErr("WARG");
+        }
+    }
+
+    void Subtask_UpdateDueDate_Year(long year)
+    {
+        GD.PrintErr("YEAR IS NOT YET IMPLEMENTED");
     }
 
     void Subtask_UpdateDescription()
