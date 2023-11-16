@@ -334,6 +334,11 @@ public partial class Tester : Node
         {
             selectedTab = primaryTabBar.CurrentTab;
         }
+        else
+        {
+            //Really bad workaround. Improve this later.
+            SubtaskEdit_Update(true);
+        }
 
         GD.Print("Update Primary Display to tab " + selectedTab);
         if (openTabs[(int)selectedTab].isTask)
@@ -357,8 +362,6 @@ public partial class Tester : Node
         //Cancel all current open label edits.
         taskTitleLabelEdit.CancelEdit();
         courseNameLabelEdit.CancelEdit();
-
-        UpdateSecondaryDisplay(secondaryTabBar.CurrentTab);
     }
 
     #region Course Methods
@@ -526,9 +529,11 @@ public partial class Tester : Node
         newTask.dueDate.AddDays(1);
         //TODO: set time to 11:59pm by default.
 
-        openTabs[primaryTabBar.CurrentTab].task.subtasks.Add(newTask);
+        int currentTab = primaryTabBar.CurrentTab;
+        openTabs[currentTab].task.subtasks.Add(newTask);
 
         UpdateOpenTabs();
+        primaryTabBar.CurrentTab = currentTab;
         GD.Print("Updating display with " + openTabs[primaryTabBar.CurrentTab].task.taskName);
         Task_UpdateDisplay(openTabs[primaryTabBar.CurrentTab].task);
 
@@ -559,6 +564,8 @@ public partial class Tester : Node
         UpdateOpenTabs();
         UpdateTree();
 
+        //Adjusting the current tab and forcing the SubtaskEdit tab to be redrawn, removing a subtask if it's connected to this task.
+        secondaryTabBar.CurrentTab = 0;
         SubtaskEdit_Update(true);
     }
     #endregion
@@ -594,12 +601,11 @@ public partial class Tester : Node
     {
         TreeItem selecteditem = subtaskTree.GetSelected();
 
-        if (selecteditem != null && !forceClearSubtask)
+        if (selecteditem != null && openTabs[primaryTabBar.CurrentTab].isTask && !forceClearSubtask)
         {
             secondaryTabBar.CurrentTab = 2;
             edittingTask = selecteditem.GetIndex();
 
-            //This throws an error when a Task with a currently open subtask is deleted, but it gets caught immediately and has no visible effect.
             TaskBase selectedTask = openTabs[primaryTabBar.CurrentTab].task.subtasks[selecteditem.GetIndex()];
 
             //Make this more accurate later.
@@ -613,6 +619,7 @@ public partial class Tester : Node
         }
         else
         {
+            GD.Print("Item null " + (selecteditem == null) + " is task " + openTabs[primaryTabBar.CurrentTab].isTask + " force " + forceClearSubtask);
             secondaryTabBar.SetTabTitle(2, "No Subtask Selected");
 
             subtaskEditNode.Visible = false;
