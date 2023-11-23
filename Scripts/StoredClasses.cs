@@ -62,6 +62,7 @@ namespace AssignmentTracker {
 
     public class TaskBase {
         public short completion = 0;
+        public float value;
         public string taskDescription;
 
         //Task Type could be Quiz, Midterm, Aiisgments, Project or Others

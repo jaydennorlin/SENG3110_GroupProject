@@ -27,6 +27,7 @@ public partial class Tester : Node
     [ExportGroup("Task Fields")]
     [Export] Control taskParentNode;
     [Export] LabelEdit taskTitleLabelEdit;
+    [Export] SpinBox taskValueSpinbox;
     [Export] RichTextLabel taskInfoLabel;
     [Export] OptionButton taskHourOption;
     [Export] OptionButton taskMinuteOption;
@@ -109,7 +110,7 @@ public partial class Tester : Node
         }
 
         //Primary/Generic Events
-        coursesTree.CellSelected += OpenTab;
+        coursesTree.CellSelected += AddTab;
 
         primaryTabBar.TabChanged += UpdatePrimaryDisplay;
         primaryTabBar.TabClosePressed += TabRemoved;
@@ -123,6 +124,12 @@ public partial class Tester : Node
 
         //Task Events
         taskTitleLabelEdit.EditComplete += Task_UpdateTitle;
+        taskValueSpinbox.ValueChanged += Task_UpdateValue;
+        taskHourOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Hour;
+        taskMinuteOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Minute;
+        taskMonthOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Month;
+        taskDayOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Day;
+        taskYearOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Year;
         taskDescriptionArea.TextChanged += Task_UpdateDescription;
         createSubtaskButton.Pressed += CreateSubtask;
         subtaskTree.CellSelected += SubtaskEdit_Update;
@@ -133,11 +140,6 @@ public partial class Tester : Node
 
         //Subtask Edit
         subtaskTypeEdit.TextChanged += PrimaryDisplay_UpdateType;
-        taskHourOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Hour;
-        taskMinuteOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Minute;
-        taskMonthOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Month;
-        taskDayOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Day;
-        taskYearOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Year;
         subtaskDescriptionEdit.TextChanged += PrimaryDisplay_UpdateDescription;
 
         //Final Initialization.
@@ -170,6 +172,15 @@ public partial class Tester : Node
     public override void _Process(double delta)
     {
         //Save once every few frames?
+
+        //Very suboptimal, but effective.
+        if (taskValueSpinbox.GetLineEdit().HasFocus())
+        {
+            if (Input.IsKeyLabelPressed(Key.Escape))
+            {
+                taskValueSpinbox.GetLineEdit().ReleaseFocus();
+            }
+        }
     }
 
     public void UpdateTree()
@@ -227,9 +238,8 @@ public partial class Tester : Node
         }
     }
 
-
     //Consider using MouseButtonIndex to bring up a context menu that lets you create a new task/course?
-    private void OpenTab()
+    private void AddTab()
     {
         TreeItem selecteditem = coursesTree.GetSelected();
 
@@ -238,16 +248,16 @@ public partial class Tester : Node
             //Courses are childed to the root of the tree, so the selected TreeItem must be a course.
             if (selecteditem.GetParent() == coursesTreeRoot)
             {
-                OpenCourseTab(activeTerm.courses[selecteditem.GetIndex()]);
+                AddCourseTab(activeTerm.courses[selecteditem.GetIndex()]);
             }
             else
             {
-                OpenTaskTab(activeTerm.courses[selecteditem.GetParent().GetIndex()].tasks[selecteditem.GetIndex()]);
+                AddTaskTab(activeTerm.courses[selecteditem.GetParent().GetIndex()].tasks[selecteditem.GetIndex()]);
             }
         }
     }
 
-    void OpenTaskTab(PrimaryTask task)
+    void AddTaskTab(PrimaryTask task)
     {
         TabItem createdItem = new TabItem(true, task, null);
 
@@ -265,7 +275,7 @@ public partial class Tester : Node
         }
     }
 
-    void OpenCourseTab(Course course)
+    void AddCourseTab(Course course)
     {
         TabItem createdItem = new TabItem(false, null, course);
 
@@ -354,6 +364,10 @@ public partial class Tester : Node
             SubtaskEdit_Update(true);
         }
 
+        //Cancel all current open label edits.
+        taskTitleLabelEdit.CancelEdit();
+        courseNameLabelEdit.CancelEdit();
+
         GD.Print("Update Primary Display to tab " + selectedTab);
         if (openTabs[(int)selectedTab].isTask)
         {
@@ -372,10 +386,6 @@ public partial class Tester : Node
             courseInfoArea.ClearUndoHistory();
             Course_UpdateDisplay(openTabs[(int)selectedTab].course);
         }
-
-        //Cancel all current open label edits.
-        taskTitleLabelEdit.CancelEdit();
-        courseNameLabelEdit.CancelEdit();
     }
 
     #region Course Methods
@@ -388,7 +398,7 @@ public partial class Tester : Node
 
         activeTerm.courses.Add(newCourse);
         AddCourseToTree(newCourse, true);
-        OpenTab();
+        AddTab();
     }
 
     public void Course_UpdateDisplay(Course course)
@@ -468,12 +478,18 @@ public partial class Tester : Node
 
         course.tasks.Add(newTask);
         UpdateTree();
-        OpenTaskTab(newTask);
+        AddTaskTab(newTask);
     }
 
     public void Task_UpdateDisplay(PrimaryTask task)
 	{
         taskTitleLabelEdit.Text = task.taskName;
+
+        //GD.Print("0: " + taskValueSpinbox.Value + ", " + taskValueSpinbox.GetLineEdit().Text);
+        taskValueSpinbox.Value = task.value;
+        taskValueSpinbox.GetLineEdit().Text = task.value.ToString();
+        //GD.Print("1: " + taskValueSpinbox.Value + ", " + taskValueSpinbox.GetLineEdit().Text);
+
         taskInfoLabel.Text = task.course.courseName;
         PrimaryDisplay_SetTime(task.dueDate);
         taskDescriptionArea.Text = task.taskDescription;
@@ -544,6 +560,13 @@ public partial class Tester : Node
 
         //UpdateOpenTabs() causes the first tab to be selected, so we force it back to the current tab we're at.
         primaryTabBar.CurrentTab = currentTab;
+    }
+
+    private void Task_UpdateValue(double value)
+    {
+        GD.Print("value Updated");
+        openTabs[primaryTabBar.CurrentTab].task.value = (float)taskValueSpinbox.Value;
+        taskValueSpinbox.GetLineEdit().ReleaseFocus();
     }
 
     private void Task_UpdateDescription()
