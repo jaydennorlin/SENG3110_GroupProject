@@ -11,7 +11,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("primaryTabBar", "termNameLabel", "createCourseButton", "coursesTree", "courseParentNode", "courseNameLabelEdit", "courseInfoArea", "createTaskButton", "deleteCourseButton", "taskParentNode", "taskTitleLabelEdit", "taskValueSpinbox", "taskInfoLabel", "taskHourOption", "taskMinuteOption", "taskMonthOption", "taskDayOption", "taskYearOption", "taskDescriptionArea", "createSubtaskButton", "subtaskTree", "deleteTaskButton", "secondaryTabBar", "calendarNode", "upcomingAssignmentsNode", "subtaskEditNode", "subtaskTypeEdit", "subtaskDescriptionEdit")]
+[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("primaryTabBar", "termNameLabel", "createCourseButton", "coursesTree", "courseParentNode", "courseNameLabelEdit", "courseInfoArea", "createTaskButton", "deleteCourseButton", "taskParentNode", "taskTitleLabelEdit", "taskInfoLabel", "taskHourOption", "taskMinuteOption", "taskMonthOption", "taskDayOption", "taskYearOption", "taskDescriptionArea", "createSubtaskButton", "subtaskTree", "deleteTaskButton", "secondaryTabBar", "calendarNode", "upcomingAssignmentsNode", "subtaskEditNode", "subtaskTypeEdit", "subtaskDescriptionEdit")]
 script = ExtResource("1_5a2fi")
 primaryTabBar = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/ScrollContainer/TabBar")
 termNameLabel = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/RichTextLabel")
@@ -24,7 +24,6 @@ createTaskButton = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainD
 deleteCourseButton = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/CourseVBox/DeleteCourseButton")
 taskParentNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox")
 taskTitleLabelEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer2/TaskNameLabel")
-taskValueSpinbox = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/HBoxContainer3/SpinBox")
 taskInfoLabel = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/RichTextLabel")
 taskHourOption = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/DateEditHBo/HourDropdown")
 taskMinuteOption = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/TaskVBox/DateEditHBo/MinuteDropdown")
