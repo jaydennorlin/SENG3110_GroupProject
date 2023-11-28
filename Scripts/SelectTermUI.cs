@@ -47,12 +47,12 @@ public partial class SelectTermUI : Control
     /// </summary>
     void termListBoxUpdater(string path)
 	{
-        termLocationList.Clear();
+        termLocationList.Clear();//Clear the List
         GD.Print("Folder path is " + path);
         string[] files = Directory.GetFiles(@path, "*.json");
         //Limitation, if there is any json file not relating in here, it could ccause problem.
 
-        if (files != null)//please do if file is there
+        if (files != null)//Do it if file are here, may be not nesessary. I dobt this is not working properly, but system does not have problem. 
         {
 
             foreach (string file in files)
@@ -66,7 +66,7 @@ public partial class SelectTermUI : Control
                 
             }
 
-            sortTermInfo();//sort it
+            sortTermInfo();//sort the List.
 
             termListBoxClear();//clear the List Box.
 
