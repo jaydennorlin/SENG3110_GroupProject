@@ -47,6 +47,7 @@ public partial class SelectTermUI : Control
     /// </summary>
     void termListBoxUpdater(string path)
 	{
+        termLocationList.Clear();
         GD.Print("Folder path is " + path);
         string[] files = Directory.GetFiles(@path, "*.json");
         //Limitation, if there is any json file not relating in here, it could ccause problem.
@@ -122,7 +123,7 @@ public partial class SelectTermUI : Control
 
 
                 //GD.Print("Load: " + termLocationList[newI].lastModifiedDate);//debug
-                while (termLocationList[newI].lastModifiedDate > termLocationList[j].lastModifiedDate && j >= 0)//do loop while current compareson location j become 0 or   
+                while (j >= 0 && termLocationList[newI].lastModifiedDate > termLocationList[j].lastModifiedDate)//do loop while current compareson location j become 0 or   
                 {
                     //swap them
                     GD.Print("Change happen with " + termLocationList[newI].termName + newI + " and" + termLocationList[j].termName + j);
