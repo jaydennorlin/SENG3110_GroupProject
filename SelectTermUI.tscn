@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Scripts/SelectTermUI.cs" id="1_2isdf"]
 [ext_resource type="Texture2D" uid="uid://5qn54b4qg5jn" path="res://icon.svg" id="1_pd5da"]
 
-[node name="SelectTermUI" type="Control" node_paths=PackedStringArray("createButton", "OpenButton", "termListBox", "openFileDialog")]
+[node name="SelectTermUI" type="Control" node_paths=PackedStringArray("createButton", "openButton", "termListBox")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,9 +12,8 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_2isdf")
 createButton = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer/Button_CreateTermFolder")
-OpenButton = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer/Button_OpenTermFolder2")
+openButton = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer/Button_OpenTermFolder2")
 termListBox = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/ScrollContainer_SelectTerm/VBoxContainer")
-openFileDialog = NodePath("OpenFileDialog")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -92,11 +91,3 @@ text = "Create Term Folder"
 [node name="Button_OpenTermFolder2" type="Button" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
 text = "Open Existing Term Folder"
-
-[node name="OpenFileDialog" type="FileDialog" parent="."]
-title = "Open a File"
-position = Vector2i(480, 350)
-size = Vector2i(392, 162)
-ok_button_text = "Open"
-file_mode = 0
-access = 1
