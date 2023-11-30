@@ -43,10 +43,9 @@ public partial class TaskSortDisplay : Button
 
 	public void UpdateDisplay()
 	{
-		GD.Print("Update at " + taskNameLabel.GetParent().GetIndex() + " for " + task.taskName);
 		taskNameLabel.Text = task.taskName;
         taskValueLabel.Text = "Value: " + task.value;
 		//IMPROVE LATER
-		taskDueDateLabel.Text = task.dueDate.Date.DayOfWeek + ", " + task.dueDate.ToShortTimeString() + ", " + task.dueDate.ToString("m") + " ";
+		taskDueDateLabel.Text = task.dueDate.Date.ToString("ddd") + " " + task.dueDate.ToShortTimeString() + ", " + task.dueDate.ToString("m") + " ";
     }
 }

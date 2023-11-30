@@ -874,8 +874,6 @@ public partial class Tester : Node
 
     void UpcomingTasks_UpdateDisplay()
     {
-        GD.Print("Doing it");
-
         sortedTasks.Clear();
 
         for (int i = 0; i < currentTerm.courses.Count; i++)
@@ -886,7 +884,6 @@ public partial class Tester : Node
             }
         }
 
-        GD.Print("Sorting by " + taskSortingOption.Selected);
         List<TaskPlaceholder> sortedPlaceholder = SortExample.SortTasks(sortedTasks.ToArray(), taskSortingOption.Selected);
 
         while (taskSortDisplays.Count != 0)
@@ -911,8 +908,8 @@ public partial class Tester : Node
             }
             else
             {
-                GD.Print("Desc " + (sortedPlaceholder.Count - 1 - sortedPlaceholder[i].originalIndex));
-                ((TaskSortDisplay)n).task = sortedTasks[sortedPlaceholder.Count - 1 - sortedPlaceholder[i].originalIndex];
+                GD.Print("Desc " + sortedPlaceholder[sortedPlaceholder.Count - 1 - i].originalIndex);
+                ((TaskSortDisplay)n).task = sortedTasks[sortedPlaceholder[sortedPlaceholder.Count - 1 - i].originalIndex];
             }
 
             taskSortDisplays.Add(n);
@@ -920,8 +917,6 @@ public partial class Tester : Node
 
         for (int i = 0; i < taskSortDisplays.Count; i++)
         {
-            GD.Print("Adding in " + ((TaskSortDisplay)taskSortDisplays[i]).task.taskName);
-
             ((TaskSortDisplay)taskSortDisplays[i]).Setup();
             ((TaskSortDisplay)taskSortDisplays[i]).UpdateDisplay();
 

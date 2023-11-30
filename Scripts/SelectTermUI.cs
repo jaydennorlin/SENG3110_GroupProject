@@ -142,8 +142,6 @@ public partial class SelectTermUI : Control
 
     void UpdateTermTree()
     {
-        GD.Print("Clear Tree");
-
         //Necessary due to wretched engine fuckery. Possibly an issue elsewhere as well.
         CallDeferred("BuildTermTree");
     }
@@ -157,7 +155,6 @@ public partial class SelectTermUI : Control
         for (int i = 0; i < termPathList.Count; i++)
         {
             TreeItem termTreeItem = termTree.CreateItem(termTreeRoot);
-            GD.Print("Null Item " + (termTreeItem == null) + " at " + termPathList[i]);
 
             if (File.Exists(termPathList[i]))
             {
@@ -189,7 +186,7 @@ public partial class SelectTermUI : Control
 
         if(selectedItem.GetParent() != termTreeRoot)
         {
-            GD.Print("Operation on index " + selectedItem.GetParent().GetIndex() + ", " + termPathList[selectedItem.GetParent().GetIndex()]);
+            //GD.Print("Operation on index " + selectedItem.GetParent().GetIndex() + ", " + termPathList[selectedItem.GetParent().GetIndex()]);
             // If this item is the only item childed, then it must be childed to a MISSING item.
             if (selectedItem.GetParent().GetChildCount() == 1)
             {

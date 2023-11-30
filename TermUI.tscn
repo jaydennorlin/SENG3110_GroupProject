@@ -1878,6 +1878,7 @@ size_flags_vertical = 3
 visible = false
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
+size_flags_vertical = 0
 alignment = 0
 script = ExtResource("3_hd2x5")
 mainUI = NodePath("../../../../../../../../../Tester")
