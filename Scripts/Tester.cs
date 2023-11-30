@@ -10,12 +10,28 @@ public partial class Tester : Node
 {
     [ExportGroup("UI")]
     [Export] TabBar primaryTabBar;
+    //Slightly confusing naming scheme here. Main Editor is the majority of the UI. Term Editor is just for changing things about the current term.
+    [Export] Control mainEditor;
+    [Export] Control termEditor;
 
     [ExportGroup("Term Fields")]
     [Export] RichTextLabel termNameLabel;
     [Export] Button createCourseButton;
     [Export] Tree coursesTree;
     TreeItem coursesTreeRoot;
+    [Export] Button editTermButton;
+
+    [ExportGroup("Term Editor Fields")]
+    [Export] TextEdit termNameEdit;
+    [Export] OptionButton termStartMonthOption;
+    [Export] OptionButton termStartDayOption;
+    [Export] SpinBox termStartYearSpinbox;
+    [Export] OptionButton termEndMonthOption;
+    [Export] OptionButton termEndDayOption;
+    [Export] SpinBox termEndYearSpinbox;
+    [Export] Button termEditConfirm;
+    [Export] Button termEditCancel;
+
 
     [ExportGroup("Course Fields")]
     [Export] Control courseParentNode;
@@ -33,7 +49,7 @@ public partial class Tester : Node
     [Export] OptionButton taskMinuteOption;
     [Export] OptionButton taskMonthOption;
     [Export] OptionButton taskDayOption;
-    [Export] OptionButton taskYearOption;
+    [Export] SpinBox taskYearSpinbox;
     [Export] TextEdit taskDescriptionArea;
     [Export] Button createSubtaskButton;
     [Export] Tree subtaskTree;
@@ -102,6 +118,16 @@ public partial class Tester : Node
         //Formatting makes it larger, bold, and centered.
         termNameLabel.Text = "[font_size=20][b][center]" + activeTerm.termName;
 
+        editTermButton.Pressed += EditTerm_OpenEditor;
+        termEditConfirm.Pressed += EditTerm_Confirm;
+        termEditCancel.Pressed += EditTerm_Cancel;
+
+        //Necessary to ensure you can never select an impossible date.
+        termStartMonthOption.ItemSelected += EditTerm_UpdateDateOptions;
+        termStartYearSpinbox.ValueChanged += EditTerm_UpdateDateOptions;
+        termEndMonthOption.ItemSelected += EditTerm_UpdateDateOptions;
+        termEndYearSpinbox.ValueChanged += EditTerm_UpdateDateOptions;
+
         createCourseButton.Pressed += CreateNewCourse;
 
         for (int i = 0; i < activeTerm.courses.Count; i++)
@@ -129,7 +155,7 @@ public partial class Tester : Node
         taskMinuteOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Minute;
         taskMonthOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Month;
         taskDayOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Day;
-        taskYearOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Year;
+        taskYearSpinbox.ValueChanged += PrimaryDisplay_UpdateDueDate_Year;
         taskDescriptionArea.TextChanged += Task_UpdateDescription;
         createSubtaskButton.Pressed += CreateSubtask;
         subtaskTree.CellSelected += SubtaskEdit_Update;
@@ -174,11 +200,14 @@ public partial class Tester : Node
         //Save once every few frames?
 
         //Very suboptimal, but effective.
-        if (taskValueSpinbox.GetLineEdit().HasFocus())
+        if (taskValueSpinbox.GetLineEdit().HasFocus() || taskYearSpinbox.GetLineEdit().HasFocus() || termEndYearSpinbox.GetLineEdit().HasFocus() || termStartYearSpinbox.GetLineEdit().HasFocus())
         {
             if (Input.IsKeyLabelPressed(Key.Escape))
             {
                 taskValueSpinbox.GetLineEdit().ReleaseFocus();
+                taskYearSpinbox.GetLineEdit().ReleaseFocus();
+                termEndYearSpinbox.GetLineEdit().ReleaseFocus();
+                termStartYearSpinbox.GetLineEdit().ReleaseFocus();
             }
         }
     }
@@ -385,6 +414,30 @@ public partial class Tester : Node
 
             courseInfoArea.ClearUndoHistory();
             Course_UpdateDisplay(openTabs[(int)selectedTab].course);
+        }
+    }
+
+    void UpdateDateOptions(int year, int month, OptionButton dateOptions)
+    {
+        if (dateOptions.ItemCount != DateTime.DaysInMonth(year, month))
+        {
+            GD.Print("Date update from " + dateOptions.ItemCount + " to " + DateTime.DaysInMonth(year, month));
+            int selected = dateOptions.Selected;
+            dateOptions.Clear();
+
+            for (int i = 1; i <= DateTime.DaysInMonth(year, month); i++)
+            {
+                if (i < 10)
+                {
+                    dateOptions.AddItem("0" + i);
+                }
+                else
+                {
+                    dateOptions.AddItem(i.ToString());
+                }
+            }
+
+            dateOptions.Selected = Mathf.Clamp(selected, 0, DateTime.DaysInMonth(year, month) - 1);
         }
     }
 
@@ -651,35 +704,10 @@ public partial class Tester : Node
 
         taskMonthOption.Selected = time.Month - 1;
 
-        PrimaryDisplay_UpdateDateOptions(time.Year, time.Month);
+        UpdateDateOptions(time.Year, time.Month, taskDayOption);
         taskDayOption.Selected = time.Day - 1;
 
-        //Adjust available options to be based on current term?
-        //subtaskYearOption.Selected
-    }
-
-    void PrimaryDisplay_UpdateDateOptions(int year, int month)
-    {
-        if (taskDayOption.ItemCount != DateTime.DaysInMonth(year, month))
-        {
-            GD.Print("Date update from " + taskDayOption.ItemCount + " to " + DateTime.DaysInMonth(year, month));
-            int selected = taskDayOption.Selected;
-            taskDayOption.Clear();
-
-            for (int i = 1; i <= DateTime.DaysInMonth(year, month); i++)
-            {
-                if (i < 10)
-                {
-                    taskDayOption.AddItem("0" + i);
-                }
-                else
-                {
-                    taskDayOption.AddItem(i.ToString());
-                }
-            }
-
-            taskDayOption.Selected = Mathf.Clamp(selected, 0, DateTime.DaysInMonth(year, month) - 1);
-        }
+        taskYearSpinbox.Value = time.Year;
     }
 
     void PrimaryDisplay_UpdateType()
@@ -720,7 +748,7 @@ public partial class Tester : Node
         DateTime time = openTabs[primaryTabBar.CurrentTab].task.dueDate;
 
         //Months do not start indexing from 0.
-        PrimaryDisplay_UpdateDateOptions(time.Year, (int)month + 1);
+        UpdateDateOptions(time.Year, (int)month + 1, taskDayOption);
         time = new DateTime(time.Year, (int)month + 1, taskDayOption.Selected + 1, time.Hour, time.Minute, 0);
 
         openTabs[primaryTabBar.CurrentTab].task.dueDate = time;
@@ -735,9 +763,15 @@ public partial class Tester : Node
         openTabs[primaryTabBar.CurrentTab].task.dueDate = time;
     }
 
-    void PrimaryDisplay_UpdateDueDate_Year(long year)
+    void PrimaryDisplay_UpdateDueDate_Year(double year)
     {
-        GD.PrintErr("YEAR IS NOT YET IMPLEMENTED");
+        DateTime time = openTabs[primaryTabBar.CurrentTab].task.dueDate;
+
+        time = new DateTime((int)year, time.Month, taskDayOption.Selected + 1, time.Hour, time.Minute, 0);
+
+        openTabs[primaryTabBar.CurrentTab].task.dueDate = time;
+
+        taskYearSpinbox.GetLineEdit().ReleaseFocus();
     }
 
     void PrimaryDisplay_UpdateDescription()
@@ -806,6 +840,67 @@ public partial class Tester : Node
             subtaskEditNode.Visible = false;
         }
     }
+    #endregion
+
+    #region Term Editor
+    void EditTerm_OpenEditor()
+    {
+        termNameEdit.Text = activeTerm.termName;
+
+        EditTerm_UpdateDateOptions();
+
+        termStartMonthOption.Selected = activeTerm.startDate.Month - 1;
+        termStartYearSpinbox.Value = activeTerm.startDate.Year;
+        termStartDayOption.Selected = activeTerm.startDate.Day - 1;
+
+        termEndMonthOption.Selected = activeTerm.endDate.Month - 1;
+        termEndYearSpinbox.Value = activeTerm.endDate.Year;
+        termEndDayOption.Selected = activeTerm.endDate.Day - 1;
+
+        mainEditor.Hide();
+        termEditor.Show();
+    }
+
+    void EditTerm_UpdateDateOptions()
+    {
+        UpdateDateOptions(activeTerm.startDate.Month, activeTerm.startDate.Year, termStartDayOption);
+        UpdateDateOptions(activeTerm.endDate.Month, activeTerm.endDate.Year, termEndDayOption);
+    }
+
+    //Necessary to have the unused argument so it can be called by an event.
+    void EditTerm_UpdateDateOptions(long index)
+    {
+        EditTerm_UpdateDateOptions();
+        termEndYearSpinbox.GetLineEdit().ReleaseFocus();
+        termStartYearSpinbox.GetLineEdit().ReleaseFocus();
+    }
+
+    //Necessary to have the unused argument so it can be called by an event.
+    void EditTerm_UpdateDateOptions(double value)
+    {
+        EditTerm_UpdateDateOptions();
+        termEndYearSpinbox.GetLineEdit().ReleaseFocus();
+        termStartYearSpinbox.GetLineEdit().ReleaseFocus();
+    }
+
+    void EditTerm_Confirm()
+    {
+        activeTerm.termName = termNameEdit.Text;
+        termNameLabel.Text = "[font_size=20][b][center]" + activeTerm.termName;
+
+        activeTerm.startDate = new DateTime((int)termStartYearSpinbox.Value, termStartMonthOption.Selected + 1, termStartDayOption.Selected + 1);
+        activeTerm.startDate = new DateTime((int)termEndYearSpinbox.Value, termEndMonthOption.Selected + 1, termEndDayOption.Selected + 1);
+
+        mainEditor.Show();
+        termEditor.Hide();
+    }
+
+    void EditTerm_Cancel() 
+    {
+        mainEditor.Show();
+        termEditor.Hide();
+    }
+
     #endregion
 }
 
