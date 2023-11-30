@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Scripts/SelectTermUI.cs" id="1_2isdf"]
 [ext_resource type="Texture2D" uid="uid://5qn54b4qg5jn" path="res://icon.svg" id="1_pd5da"]
 
-[node name="SelectTermUI" type="Control" node_paths=PackedStringArray("createButton", "openButton", "termListTree")]
+[node name="SelectTermUI" type="Control" node_paths=PackedStringArray("AddExistingTermButton", "CreateNewTermButton", "termTree")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,9 +11,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_2isdf")
-createButton = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer/Button_CreateTermFolder")
-openButton = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer/Button_OpenTermFolder2")
-termListTree = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/ScrollContainer_SelectTerm/Tree")
+AddExistingTermButton = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer/Button_OpenTermFolder2")
+CreateNewTermButton = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer/Button_CreateTermFolder")
+termTree = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/ScrollContainer_SelectTerm/Tree")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -78,4 +78,4 @@ text = "Create new Term"
 
 [node name="Button_OpenTermFolder2" type="Button" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
-text = "Open existing Term File"
+text = "Add Existing Term"

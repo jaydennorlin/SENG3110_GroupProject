@@ -877,8 +877,8 @@ public partial class Tester : Node
 
     void EditTerm_UpdateDateOptions()
     {
-        UpdateDateOptions(currentTerm.startDate.Month, currentTerm.startDate.Year, termStartDayOption);
-        UpdateDateOptions(currentTerm.endDate.Month, currentTerm.endDate.Year, termEndDayOption);
+        UpdateDateOptions(currentTerm.startDate.Year, currentTerm.startDate.Month, termStartDayOption);
+        UpdateDateOptions(currentTerm.endDate.Year, currentTerm.endDate.Month, termEndDayOption);
     }
 
     //Necessary to have the unused argument so it can be called by an event.

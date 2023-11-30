@@ -6,15 +6,15 @@ using System.Text.Json;
 
 namespace AssignmentTracker {
     public class Term {
-        public string termName;
+        public string termName { get; set; }
         //Add start/end date.
-        public DateTime startDate;
-        public DateTime endDate;
+        public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
 
-        public string directory;
+        public string directory { get; set; }
 
         //Investigate other means of storing this.
-        public List<Course> courses = new List<Course>();
+        public List<Course> courses { get; set; } = new List<Course>();
 
         public void SaveTerm()
         {
@@ -27,11 +27,20 @@ namespace AssignmentTracker {
 
         public static Term LoadTerm(string directory)
         {
-            Term toReturn = JsonSerializer.Deserialize<Term>(directory);
+            Term toReturn = JsonSerializer.Deserialize<Term>(File.ReadAllText(directory));
 
             if (toReturn == null)
             {
                 //Throw some error or something.
+            }
+
+            //Taskbase.Course is NOT serialied, due to it creating a serialization loop. This manually adds it in afterwards.
+            for (int i = 0; i < toReturn.courses.Count; i++)
+            {
+                for (int j = 0; j < toReturn.courses[i].tasks.Count; j++)
+                {
+                    toReturn.courses[i].tasks[j].course = toReturn.courses[i];
+                }
             }
 
             return toReturn;
@@ -41,13 +50,13 @@ namespace AssignmentTracker {
     public class Course {
         //Consider adding an additional variable, "Course Code" or something like that.
         //So we can refer to the couse either by it's fill name (ex "Algorithms and Data Structures") or by its Code (ex "SENG 4530)
-        public string courseName;
+        public string courseName { get; set; }
         //Consider making this some sort of two-part string.
         //First part is the type of data being stored (Professor Name, Phone Number, etc), second part is the actual data.
         //public string[] additonalData;
-        public string notes;
+        public string notes { get; set; }
 
-        public List<PrimaryTask> tasks = new List<PrimaryTask>();
+        public List<PrimaryTask> tasks { get; set; } = new List<PrimaryTask>();
 
         public Course(string courseName, string addData)
         {
@@ -63,12 +72,12 @@ namespace AssignmentTracker {
     }
 
     public class TaskBase {
-        public short completion = 0;
-        public float value;
-        public string taskDescription;
+        public short completion { get; set; } = 0;
+        public float value { get; set; }
+        public string taskDescription { get; set; }
 
         //Task Type could be Quiz, Midterm, Aiisgments, Project or Others
-        public string taskType = "";
+        public string taskType { get; set; } = "";
 
         //Two way connection, so a task alone knows what course its part of.
         public Course course;
@@ -86,11 +95,11 @@ namespace AssignmentTracker {
     }
 
     public class PrimaryTask : TaskBase {
-        public string taskName;
+        public string taskName { get; set; }
 
-        public DateTime dueDate;
+        public DateTime dueDate { get; set; }
 
-        public List<TaskBase> subtasks = new List<TaskBase>();
+        public List<TaskBase> subtasks { get; set; } = new List<TaskBase>();
 
         public PrimaryTask(string taskName, Course course)
         {
