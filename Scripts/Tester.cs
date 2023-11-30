@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Threading.Tasks;
 using static Godot.Time;
+using static SortExample;
 
 public partial class Tester : Node
 {
@@ -203,6 +204,7 @@ public partial class Tester : Node
 
         //Sorting Display
         taskSortAscending.Pressed += UpcomingTasks_UpdateDisplay;
+        taskSortingOption.ItemSelected += UpcomingTasks_UpdateDisplay;
 
         //Subtask Edit
         subtaskTypeEdit.TextChanged += PrimaryDisplay_UpdateType;
@@ -305,7 +307,7 @@ public partial class Tester : Node
         }
     }
 
-    void AddTaskTab(PrimaryTask task)
+    public void AddTaskTab(PrimaryTask task)
     {
         TabItem createdItem = new TabItem(true, task, null);
 
@@ -823,6 +825,7 @@ public partial class Tester : Node
         else if(selectedTab == 1)
         {
             upcomingAssignmentsNode.Visible = true;
+            UpcomingTasks_UpdateDisplay();
         }
         else
         {
@@ -864,6 +867,11 @@ public partial class Tester : Node
         }
     }
 
+    private void UpcomingTasks_UpdateDisplay(long index)
+    {
+        UpcomingTasks_UpdateDisplay();
+    }
+
     void UpcomingTasks_UpdateDisplay()
     {
         GD.Print("Doing it");
@@ -878,30 +886,46 @@ public partial class Tester : Node
             }
         }
 
-        // Sorting
-        for (int i = 0; i < length; i++)
-        {
-
-        }
+        GD.Print("Sorting by " + taskSortingOption.Selected);
+        List<TaskPlaceholder> sortedPlaceholder = SortExample.SortTasks(sortedTasks.ToArray(), taskSortingOption.Selected);
 
         while (taskSortDisplays.Count != 0)
         {
-            taskSortDisplays[0].Free();
+            GD.Print("removing for task " + ((TaskSortDisplay)taskSortDisplays[0]).task.taskName);
+            taskSortDisplays[0].QueueFree();
             taskSortDisplays.RemoveAt(0);
         }
 
+        taskSortDisplays.Clear();
 
-        for (int i = 0; i < sortedTasks.Count; i++)
+        for (int i = 0; i < sortedPlaceholder.Count; i++)
         {
             Node n = taskSortDisplayPrefab.Duplicate();
-            taskSortDisplayPrefab.GetParent().AddChild(n);
 
             ((Control)n).Show();
 
-            ((TaskSortDisplay)n).task = sortedTasks[i];
-            ((TaskSortDisplay)n).UpdateDisplay();
+            if (taskSortAscending.ButtonPressed)
+            {
+                GD.Print("Asc " + sortedPlaceholder[i].originalIndex);
+                ((TaskSortDisplay)n).task = sortedTasks[sortedPlaceholder[i].originalIndex];
+            }
+            else
+            {
+                GD.Print("Desc " + (sortedPlaceholder.Count - 1 - sortedPlaceholder[i].originalIndex));
+                ((TaskSortDisplay)n).task = sortedTasks[sortedPlaceholder.Count - 1 - sortedPlaceholder[i].originalIndex];
+            }
 
             taskSortDisplays.Add(n);
+        }
+
+        for (int i = 0; i < taskSortDisplays.Count; i++)
+        {
+            GD.Print("Adding in " + ((TaskSortDisplay)taskSortDisplays[i]).task.taskName);
+
+            ((TaskSortDisplay)taskSortDisplays[i]).Setup();
+            ((TaskSortDisplay)taskSortDisplays[i]).UpdateDisplay();
+
+            taskSortDisplayPrefab.GetParent().AddChild(taskSortDisplays[i]);
         }
     }
     #endregion
@@ -985,7 +1009,7 @@ public class SortExample
         public double value;
     }
 
-    public static List<TaskPlaceholder> SortTasks(PrimaryTask[] unsortedTasks)
+    public static List<TaskPlaceholder> SortTasks(PrimaryTask[] unsortedTasks, int sortBy)
     {
         List<TaskPlaceholder> unsortedList = new List<TaskPlaceholder>(unsortedTasks.Length);
 
@@ -995,9 +1019,19 @@ public class SortExample
 
             t.originalIndex = i;
 
-            //Here the "value" would be set based on the factor we wanted to sort by. 
-            //Setting it to the Due Date for the demonstration.
-            t.value = unsortedTasks[i].dueDate.ToOADate();
+            if(sortBy == 0)
+            {
+                t.value = unsortedTasks[i].dueDate.ToOADate();
+            }
+            else if(sortBy == 1)
+            {
+                t.value = unsortedTasks[i].value;
+            }
+            else
+            {
+                //ADD PRIORITY THING HERE
+                //t.value = unsortedTasks[i].value * ();
+            }
 
             unsortedList.Add(t);
         }

@@ -1874,12 +1874,14 @@ autowrap_mode = 0
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="TaskDisplay" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/VBoxContainer" node_paths=PackedStringArray("taskNameLabel", "taskValueLabel", "taskDueDateLabel")]
+[node name="TaskDisplay" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/VBoxContainer" node_paths=PackedStringArray("mainUI", "button", "taskNameLabel", "taskValueLabel", "taskDueDateLabel")]
 visible = false
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 alignment = 0
 script = ExtResource("3_hd2x5")
+mainUI = NodePath("../../../../../../../../../Tester")
+button = NodePath(".")
 taskNameLabel = NodePath("TaskBox/TaskNameLabel")
 taskValueLabel = NodePath("TaskBox/TaskValueLabel")
 taskDueDateLabel = NodePath("TaskBox/TaskValueLabel2")
@@ -1892,10 +1894,12 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 2
+mouse_filter = 2
 
 [node name="TaskNameLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/VBoxContainer/TaskDisplay/TaskBox"]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 text = "Assignment Name"
 fit_content = true
 autowrap_mode = 0
@@ -1903,6 +1907,7 @@ autowrap_mode = 0
 [node name="TaskValueLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/VBoxContainer/TaskDisplay/TaskBox"]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 text = "Value: 1"
 fit_content = true
 autowrap_mode = 0
@@ -1910,10 +1915,11 @@ autowrap_mode = 0
 [node name="TaskValueLabel2" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/VBoxContainer/TaskDisplay/TaskBox"]
 layout_mode = 2
 size_flags_horizontal = 10
-text = "Due: Jan 25, 2023 (2 Days)"
+mouse_filter = 2
+text = "Jan 25, 2023 (2 Days)"
 fit_content = true
 autowrap_mode = 0
-text_direction = 2
+text_direction = 1
 
 [node name="TaskEditScroll" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer"]
 visible = false
