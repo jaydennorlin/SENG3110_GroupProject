@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://ce7aonb2ttgv4"]
+[gd_scene load_steps=4 format=3 uid="uid://ce7aonb2ttgv4"]
 
 [ext_resource type="Script" path="res://Scripts/Tester.cs" id="1_5a2fi"]
 [ext_resource type="Script" path="res://Scripts/LabelEdit.cs" id="2_rx2n4"]
+[ext_resource type="Script" path="res://Scripts/TaskSortDisplay.cs" id="3_hd2x5"]
 
 [node name="TermUI" type="Control"]
 layout_mode = 3
@@ -11,7 +12,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("primaryTabBar", "mainEditor", "termEditor", "termNameLabel", "createCourseButton", "coursesTree", "editTermButton", "saveTermButton", "termNameEdit", "termStartMonthOption", "termStartDayOption", "termStartYearSpinbox", "termEndMonthOption", "termEndDayOption", "termEndYearSpinbox", "termEditConfirm", "termEditCancel", "courseParentNode", "courseNameLabelEdit", "courseInfoArea", "createTaskButton", "deleteCourseButton", "taskParentNode", "taskTitleLabelEdit", "taskValueSpinbox", "taskInfoLabel", "taskHourOption", "taskMinuteOption", "taskMonthOption", "taskDayOption", "taskYearSpinbox", "taskDescriptionArea", "createSubtaskButton", "subtaskTree", "deleteTaskButton", "secondaryTabBar", "calendarNode", "upcomingAssignmentsNode", "subtaskEditNode", "subtaskTypeEdit", "subtaskDescriptionEdit")]
+[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("primaryTabBar", "mainEditor", "termEditor", "termNameLabel", "createCourseButton", "coursesTree", "editTermButton", "saveTermButton", "termNameEdit", "termStartMonthOption", "termStartDayOption", "termStartYearSpinbox", "termEndMonthOption", "termEndDayOption", "termEndYearSpinbox", "termEditConfirm", "termEditCancel", "courseParentNode", "courseNameLabelEdit", "courseInfoArea", "createTaskButton", "deleteCourseButton", "taskParentNode", "taskTitleLabelEdit", "taskValueSpinbox", "taskInfoLabel", "taskHourOption", "taskMinuteOption", "taskMonthOption", "taskDayOption", "taskYearSpinbox", "taskDescriptionArea", "createSubtaskButton", "subtaskTree", "deleteTaskButton", "secondaryTabBar", "calendarNode", "upcomingAssignmentsNode", "subtaskEditNode", "taskSortingOption", "taskSortAscending", "taskSortDisplayPrefab", "subtaskTypeEdit", "subtaskDescriptionEdit")]
 script = ExtResource("1_5a2fi")
 primaryTabBar = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/ScrollContainer/TabBar")
 mainEditor = NodePath("../LayoutScaler/ScrollContainer")
@@ -52,6 +53,9 @@ secondaryTabBar = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/Second
 calendarNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/CalendarScroll")
 upcomingAssignmentsNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll")
 subtaskEditNode = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll")
+taskSortingOption = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/Sorter/OptionButton")
+taskSortAscending = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/Sorter/CheckBox")
+taskSortDisplayPrefab = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/VBoxContainer/TaskDisplay")
 subtaskTypeEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/TaskTypeEdit")
 subtaskDescriptionEdit = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/TaskEditScroll/VBoxContainer/TaskDescriptionEdit")
 
@@ -82,7 +86,7 @@ layout_mode = 2
 [node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 bbcode_enabled = true
-text = "[font_size=25][b][center]Winter Term 2025"
+text = "[font_size=28][b][center]Winter Term 2025"
 fit_content = true
 
 [node name="NewCourseButton" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer"]
@@ -151,7 +155,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 2
 bbcode_enabled = true
-text = "[font_size=20]Task Name"
+text = "[font_size=20];Task Name"
 fit_content = true
 context_menu_enabled = true
 selection_enabled = true
@@ -395,7 +399,7 @@ size_flags_vertical = 3
 layout_mode = 2
 focus_mode = 2
 bbcode_enabled = true
-text = "Course Name"
+text = "[font_size=22];Course Name"
 fit_content = true
 selection_enabled = true
 script = ExtResource("2_rx2n4")
@@ -475,10 +479,11 @@ size_flags_horizontal = 3
 clip_tabs = false
 tab_count = 3
 tab_0/title = "Calendar"
-tab_1/title = "Upcoming Assignments"
+tab_1/title = "Upcoming Tasks"
 tab_2/title = "currentTask"
 
 [node name="CalendarScroll" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer"]
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
 vertical_scroll_mode = 2
@@ -1823,7 +1828,6 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="AssignmentsScroll" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer"]
-visible = false
 layout_mode = 2
 size_flags_vertical = 3
 vertical_scroll_mode = 2
@@ -1833,11 +1837,83 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="TextEdit" type="TextEdit" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer"]
+[node name="Sorter" type="HBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/Sorter"]
+layout_mode = 2
+text = "Sort By: "
+fit_content = true
+autowrap_mode = 0
+
+[node name="OptionButton" type="OptionButton" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/Sorter"]
+layout_mode = 2
+item_count = 3
+selected = 0
+popup/item_0/text = "Due Date"
+popup/item_0/id = 0
+popup/item_1/text = "Total Value"
+popup/item_1/id = 1
+popup/item_2/text = "Priority"
+popup/item_2/id = 2
+
+[node name="CheckBox" type="CheckBox" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/Sorter"]
+layout_mode = 2
+text = "Ascending"
+
+[node name="Filter" type="HBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/Filter"]
+layout_mode = 2
+text = "Filter: "
+fit_content = true
+autowrap_mode = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-placeholder_text = "All Upcoming Assignments
-Replace this later"
+
+[node name="TaskDisplay" type="Button" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/VBoxContainer" node_paths=PackedStringArray("taskNameLabel", "taskValueLabel", "taskDueDateLabel")]
+visible = false
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+alignment = 0
+script = ExtResource("3_hd2x5")
+taskNameLabel = NodePath("TaskBox/TaskNameLabel")
+taskValueLabel = NodePath("TaskBox/TaskValueLabel")
+taskDueDateLabel = NodePath("TaskBox/TaskValueLabel2")
+
+[node name="TaskBox" type="HBoxContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/VBoxContainer/TaskDisplay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 2
+
+[node name="TaskNameLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/VBoxContainer/TaskDisplay/TaskBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Assignment Name"
+fit_content = true
+autowrap_mode = 0
+
+[node name="TaskValueLabel" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/VBoxContainer/TaskDisplay/TaskBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Value: 1"
+fit_content = true
+autowrap_mode = 0
+
+[node name="TaskValueLabel2" type="RichTextLabel" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer/AssignmentsScroll/VBoxContainer/VBoxContainer/TaskDisplay/TaskBox"]
+layout_mode = 2
+size_flags_horizontal = 10
+text = "Due: Jan 25, 2023 (2 Days)"
+fit_content = true
+autowrap_mode = 0
+text_direction = 2
 
 [node name="TaskEditScroll" type="ScrollContainer" parent="LayoutScaler/ScrollContainer/HBoxContainer/SecondaryDisplay/VBoxContainer"]
 visible = false

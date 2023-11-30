@@ -10,6 +10,8 @@ public partial class LabelEdit : RichTextLabel
     [Export] Button saveButton;
     [Export] Button cancelButton;
 
+    string formatting;
+
     //I do not fully understand this Syntax yet, but it works.
     public event Action EditComplete = delegate { };
 
@@ -31,7 +33,16 @@ public partial class LabelEdit : RichTextLabel
         displayUI.Hide();
         editUI.Show();
 
-        textEdit.Text = Text;
+        /*if (Text.Contains(';'))
+        {
+            formatting = Text.Substring(Text.IndexOf(';'));
+        }
+        else
+        {*/
+            formatting = "";
+        //}
+
+        textEdit.Text = Text.Substring(formatting.Length);
     }
 
     //These three are poorly thought out. Fix later.
@@ -47,6 +58,17 @@ public partial class LabelEdit : RichTextLabel
         editUI.Hide();
 
         Text = textEdit.Text;
+
+        if (String.IsNullOrWhiteSpace(Text))
+        {
+            //Label becomes inaccessible if there is no text in it. This prevents that
+            Text = "...";
+        }
+
+        if (!String.IsNullOrWhiteSpace(formatting))
+        {
+            //Text = formatting + Text;
+        }
 
         EditComplete.Invoke();
     }

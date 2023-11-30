@@ -3,6 +3,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Threading.Tasks;
 using static Godot.Time;
 
@@ -62,6 +63,13 @@ public partial class Tester : Node
     [Export] Control calendarNode;
     [Export] Control upcomingAssignmentsNode;
     [Export] Control subtaskEditNode;
+
+    [ExportSubgroup("Task Sorting Menu")]
+    [Export] OptionButton taskSortingOption;
+    [Export] CheckBox taskSortAscending;
+    [Export] Node taskSortDisplayPrefab;
+    List<Node> taskSortDisplays = new List<Node>();
+    List<PrimaryTask> sortedTasks = new List<PrimaryTask>();
 
     [ExportSubgroup("Subtask Editting Menu")]
     [Export] TextEdit subtaskTypeEdit;
@@ -192,6 +200,9 @@ public partial class Tester : Node
 
         //Secondary Display Events
         secondaryTabBar.TabChanged += UpdateSecondaryDisplay;
+
+        //Sorting Display
+        taskSortAscending.Pressed += UpcomingTasks_UpdateDisplay;
 
         //Subtask Edit
         subtaskTypeEdit.TextChanged += PrimaryDisplay_UpdateType;
@@ -492,7 +503,9 @@ public partial class Tester : Node
         dialog.Confirmed += Course_Delete;
 
         //Consider finding some way of avoiding this. Investigate Obsidian/System Trash method, and file structure serializaliation.
-        dialog.Title = openTabs[primaryTabBar.CurrentTab].course.courseName + " WILL BE PERMANENTLY DELETED.";
+        dialog.Title = "Deletion Confirmation";
+        dialog.DialogText = openTabs[primaryTabBar.CurrentTab].course.courseName + " will be PERMANENTLY DELETED. \nAre you sure you want to continue?";
+        dialog.Position = (Vector2I)(mainEditor.Size * 0.5f) - (dialog.Size / 2);
 
         dialog.Popup();
     }
@@ -660,7 +673,9 @@ public partial class Tester : Node
         dialog.Confirmed += Task_Delete;
 
         //Consider finding some way of avoiding this. Investigate Obsidian/System Trash method, and file structure serializaliation.
-        dialog.Title = openTabs[primaryTabBar.CurrentTab].task.taskName + " WILL BE PERMANENTLY DELETED.";
+        dialog.Title = "Deletion Confirmation";
+        dialog.DialogText = openTabs[primaryTabBar.CurrentTab].task.taskName + " will be PERMANENTLY DELETED. \nAre you sure you want to continue?";
+        dialog.Position = (Vector2I)(mainEditor.Size * 0.5f) - (dialog.Size / 2);
 
         dialog.Popup();
     }
@@ -848,6 +863,47 @@ public partial class Tester : Node
             subtaskEditNode.Visible = false;
         }
     }
+
+    void UpcomingTasks_UpdateDisplay()
+    {
+        GD.Print("Doing it");
+
+        sortedTasks.Clear();
+
+        for (int i = 0; i < currentTerm.courses.Count; i++)
+        {
+            for (int j = 0; j < currentTerm.courses[i].tasks.Count; j++)
+            {
+                sortedTasks.Add(currentTerm.courses[i].tasks[j]);
+            }
+        }
+
+        // Sorting
+        for (int i = 0; i < length; i++)
+        {
+
+        }
+
+        while (taskSortDisplays.Count != 0)
+        {
+            taskSortDisplays[0].Free();
+            taskSortDisplays.RemoveAt(0);
+        }
+
+
+        for (int i = 0; i < sortedTasks.Count; i++)
+        {
+            Node n = taskSortDisplayPrefab.Duplicate();
+            taskSortDisplayPrefab.GetParent().AddChild(n);
+
+            ((Control)n).Show();
+
+            ((TaskSortDisplay)n).task = sortedTasks[i];
+            ((TaskSortDisplay)n).UpdateDisplay();
+
+            taskSortDisplays.Add(n);
+        }
+    }
     #endregion
 
     #region Term Editor
@@ -903,7 +959,7 @@ public partial class Tester : Node
         termNameLabel.Text = "[font_size=20][b][center]" + currentTerm.termName;
 
         currentTerm.startDate = new DateTime((int)termStartYearSpinbox.Value, termStartMonthOption.Selected + 1, termStartDayOption.Selected + 1);
-        currentTerm.startDate = new DateTime((int)termEndYearSpinbox.Value, termEndMonthOption.Selected + 1, termEndDayOption.Selected + 1);
+        currentTerm.endDate = new DateTime((int)termEndYearSpinbox.Value, termEndMonthOption.Selected + 1, termEndDayOption.Selected + 1);
 
         mainEditor.Show();
         termEditor.Hide();

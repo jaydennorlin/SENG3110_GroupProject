@@ -18,7 +18,9 @@ namespace AssignmentTracker {
 
         public void SaveTerm()
         {
-            string jsonString = JsonSerializer.Serialize(this);
+            JsonSerializerOptions options = new JsonSerializerOptions();
+            options.WriteIndented = true;
+            string jsonString = JsonSerializer.Serialize(this, options);
 
             GD.Print("Serialied " + termName + " to " + jsonString);
 

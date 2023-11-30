@@ -10,8 +10,8 @@ config_version=5
 
 [application]
 
-config/name="SENG_GroupProject"
-run/main_scene="res://TermUI.tscn"
+config/name="AssignmentTracker"
+run/main_scene="res://SelectTermUI.tscn"
 config/features=PackedStringArray("4.1", "C#", "Forward Plus")
 boot_splash/show_image=false
 config/icon="res://icon.svg"
