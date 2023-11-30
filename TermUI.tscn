@@ -11,7 +11,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("primaryTabBar", "mainEditor", "termEditor", "termNameLabel", "createCourseButton", "coursesTree", "editTermButton", "termNameEdit", "termStartMonthOption", "termStartDayOption", "termStartYearSpinbox", "termEndMonthOption", "termEndDayOption", "termEndYearSpinbox", "termEditConfirm", "termEditCancel", "courseParentNode", "courseNameLabelEdit", "courseInfoArea", "createTaskButton", "deleteCourseButton", "taskParentNode", "taskTitleLabelEdit", "taskValueSpinbox", "taskInfoLabel", "taskHourOption", "taskMinuteOption", "taskMonthOption", "taskDayOption", "taskYearSpinbox", "taskDescriptionArea", "createSubtaskButton", "subtaskTree", "deleteTaskButton", "secondaryTabBar", "calendarNode", "upcomingAssignmentsNode", "subtaskEditNode", "subtaskTypeEdit", "subtaskDescriptionEdit")]
+[node name="Tester" type="Node" parent="." node_paths=PackedStringArray("primaryTabBar", "mainEditor", "termEditor", "termNameLabel", "createCourseButton", "coursesTree", "editTermButton", "saveTermButton", "termNameEdit", "termStartMonthOption", "termStartDayOption", "termStartYearSpinbox", "termEndMonthOption", "termEndDayOption", "termEndYearSpinbox", "termEditConfirm", "termEditCancel", "courseParentNode", "courseNameLabelEdit", "courseInfoArea", "createTaskButton", "deleteCourseButton", "taskParentNode", "taskTitleLabelEdit", "taskValueSpinbox", "taskInfoLabel", "taskHourOption", "taskMinuteOption", "taskMonthOption", "taskDayOption", "taskYearSpinbox", "taskDescriptionArea", "createSubtaskButton", "subtaskTree", "deleteTaskButton", "secondaryTabBar", "calendarNode", "upcomingAssignmentsNode", "subtaskEditNode", "subtaskTypeEdit", "subtaskDescriptionEdit")]
 script = ExtResource("1_5a2fi")
 primaryTabBar = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/MainDisplay/VBoxContainer2/ScrollContainer/TabBar")
 mainEditor = NodePath("../LayoutScaler/ScrollContainer")
@@ -20,6 +20,7 @@ termNameLabel = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/VBoxCont
 createCourseButton = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/NewCourseButton")
 coursesTree = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/ScrollContainer_SelectTerm/Tree")
 editTermButton = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/EditTermButton")
+saveTermButton = NodePath("../LayoutScaler/ScrollContainer/HBoxContainer/VBoxContainer/SaveTerm")
 termNameEdit = NodePath("../LayoutScaler/Term Edit Menu/VBoxContainer/TermTitle/TextEdit")
 termStartMonthOption = NodePath("../LayoutScaler/Term Edit Menu/VBoxContainer/StartDate/MonthDropdown")
 termStartDayOption = NodePath("../LayoutScaler/Term Edit Menu/VBoxContainer/StartDate/DateDropdown")

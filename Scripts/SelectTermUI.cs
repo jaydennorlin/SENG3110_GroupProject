@@ -9,17 +9,24 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Globalization;
 
+// Jayden:
+// I have made several changes to this, but in the process it's become quite messy and bloated.
+// Should be cleaned up/refactored at some point to be more logical and concise.
 public partial class SelectTermUI : Control
 {
     [Export] Button createButton;
     [Export] Button openButton;
 	// Called when the node enters the scene tree for the first time.
-	[Export] VBoxContainer termListBox;
+	[Export] Tree termListTree;
+    TreeItem termListRoot;
 
 
 	//List to store File location with term info.
-	List<TermLocationData> termLocationList = new List<TermLocationData>();
+    List<string> termLocationList = new List<string>();
+    List<TermDetails> termDetailList = new List<TermDetails>();
 
+    //Used to save the TermLocationList in a persistent directory.
+    ConfigFile termLocationConfigFile = new ConfigFile();
 
     ///Open new File Group
     /// 
@@ -27,8 +34,9 @@ public partial class SelectTermUI : Control
     /// <summary>
     /// Open File dialog, 
     /// Credit to Jayden here. Keishi Modified and implemented.
+    /// Credit to Keishi here. Jayden Further Modified and implemented.
     /// </summary>
-    public void openFolderDialog()
+    public void OpenExistingTermDialog()
     {
         FileDialog dialog = new FileDialog();
         AddChild(dialog);
@@ -36,17 +44,58 @@ public partial class SelectTermUI : Control
         dialog.Size = (Vector2I)(Size * 0.7f);
 
         dialog.Access = FileDialog.AccessEnum.Filesystem;
-        dialog.FileMode = FileDialog.FileModeEnum.OpenDir;//open folder mode
+        dialog.FileMode = FileDialog.FileModeEnum.OpenFile;
+        dialog.AddFilter("*.term");
 
-        dialog.DirSelected += termListBoxUpdater;//pass folder path
+        dialog.FileSelected += AddNewTerm;//pass file path
 
         dialog.Popup();
     }
+
+    void AddNewTerm(string path)
+    {
+        AddNewTerm(path, true);
+    }
+
+    void AddNewTerm(string path, bool updateTermListBox, bool addToConfig = true)
+    {
+        if (!termLocationList.Contains(path))
+        {
+            termLocationList.Add(path);
+
+            TermDetails newTermData = new TermDetails();
+            newTermData.termName = Path.GetFileName(path);//get fine name
+            newTermData.termFilePath = path;//get file's abusolute path
+            newTermData.lastModifiedDate = File.GetLastWriteTime(path);//get last modifiedd date
+            //GD.Print("Load: " + newTermData.termName + " " + newTermData.lastModifiedDate);//Debug service
+
+            termDetailList.Add(newTermData);//add it to list
+
+            if (addToConfig)
+            {
+                termLocationConfigFile.SetValue(termDetailList.Count.ToString(), "List", path);
+                termLocationConfigFile.Save("user://termLocationList.cfg");
+            }
+        }
+
+        if (updateTermListBox)
+        {
+            TermListBoxUpdater();
+        }
+    }
+
     /// <summary>
     /// Update List Box or the vBOX having terms.
+    /// Created by Keishi, modified by Jayden
     /// </summary>
-    void termListBoxUpdater(string path)
+    /// 
+    void TermListBoxUpdater()
 	{
+        SortTermInfo();
+
+        UpdateTermListBox();
+
+        /*
         termLocationList.Clear();//Clear the List
         GD.Print("Folder path is " + path);
         string[] files = Directory.GetFiles(@path, "*.json");
@@ -85,18 +134,21 @@ public partial class SelectTermUI : Control
 
             //May be you can add pop up of "There is no json file!" or something
             GD.Print("No json file");
-        }
+        }*/
 
     }
 
-
-    void termListBoxClear()
+    void UpdateTermListBox()
     {
-        //clear VBoxCOntainer
-        //Chiled may not be removed from here.
-        foreach (var childrenNodes in termListBox.GetChildren())
+        termListTree.Clear();
+        termListRoot = null;
+
+        termListRoot = termListTree.CreateItem();
+
+        foreach (TermDetails termDetails in termDetailList)
         {
-            termListBox.RemoveChild(childrenNodes);
+            TreeItem termListItem = termListTree.CreateItem(termListRoot);
+            termListItem.SetText(0, termDetails.termName);
         }
     }
 
@@ -104,10 +156,10 @@ public partial class SelectTermUI : Control
     /// <summary>
     /// Sort termLocationList 
     /// </summary>
-    void sortTermInfo()
+    void SortTermInfo()
     {
-        int countList = termLocationList.Count;
-        GD.Print(countList);
+        int countList = termDetailList.Count;
+        //GD.Print(countList);
         int newI;//updated location of selected node
         int j;//current node to compare
 
@@ -118,19 +170,19 @@ public partial class SelectTermUI : Control
 
                 newI = i;//node i change the location, so set it as different variable.
                 j = i - 1;
-                GD.Print("i "+ i + " is " + termLocationList[newI].lastModifiedDate);
-                GD.Print("j is" + termLocationList[j].lastModifiedDate);
+                //GD.Print("i "+ i + " is " + termDetailList[newI].lastModifiedDate);
+                //GD.Print("j is" + termDetailList[j].lastModifiedDate);
 
 
                 //GD.Print("Load: " + termLocationList[newI].lastModifiedDate);//debug
-                while (j >= 0 && termLocationList[newI].lastModifiedDate > termLocationList[j].lastModifiedDate)//do loop while current compareson location j become 0 or   
+                while (j >= 0 && termDetailList[newI].lastModifiedDate > termDetailList[j].lastModifiedDate)//do loop while current compareson location j become 0 or   
                 {
                     //swap them
-                    GD.Print("Change happen with " + termLocationList[newI].termName + newI + " and" + termLocationList[j].termName + j);
-                    TermLocationData temp = new TermLocationData();
-                    temp = termLocationList[j];
-                    termLocationList[j] = termLocationList[newI];
-                    termLocationList[newI] = temp;
+                    //GD.Print("Change happen with " + termDetailList[newI].termName + newI + " and" + termDetailList[j].termName + j);
+                    TermDetails temp = new TermDetails();
+                    temp = termDetailList[j];
+                    termDetailList[j] = termDetailList[newI];
+                    termDetailList[newI] = temp;
                     
                     newI = j;//input new location of node i.
                     j--;
@@ -141,14 +193,12 @@ public partial class SelectTermUI : Control
         return;
     }
 
-
-
     ///Create New Folder Group
     /// 
     /// <summary>
     /// 
     /// </summary>
-    public void createFolderDialog()
+    public void CreateNewTermDialog()
     {
         FileDialog dialog = new FileDialog();
         AddChild(dialog);
@@ -156,23 +206,45 @@ public partial class SelectTermUI : Control
         dialog.Size = (Vector2I)(Size * 0.7f);
 
         dialog.Access = FileDialog.AccessEnum.Filesystem;
-        dialog.FileMode = FileDialog.FileModeEnum.OpenDir;//open folder mode
+        dialog.FileMode = FileDialog.FileModeEnum.SaveFile;
+        dialog.AddFilter("*.term");
 
-
-        dialog.DirSelected += createNewTerm;
+        dialog.FileSelected += CreateNewTerm;
 
         dialog.Popup();
     }
 
-    void createNewTerm(string path)
+    void CreateNewTerm(string path)
     {
-        //Create Json File
+        Term newTerm = new Term();
+        newTerm.termName = "Unnamed New Term";
+        newTerm.startDate = DateTime.Today.AddDays(-1);
+        newTerm.endDate = DateTime.Today.AddMonths(4);
+        newTerm.directory = path;
 
+        newTerm.SaveTerm();
 
         //Open TermUI
+        AddNewTerm(path);
+        OpenTermUI(newTerm);
     }
 
+    void OpenTermUI()
+    {
+        Term toOpen = Term.LoadTerm(termDetailList[termListTree.GetSelected().GetIndex()].termFilePath);
+        OpenTermUI(toOpen);
+    }
 
+    void OpenTermUI(Term term)
+    {
+        Node termUI = ResourceLoader.Load<PackedScene>("res://TermUI.tscn").Instantiate();
+
+        //GD.Print((termUI.GetChild(0).GetScript()).GetType().ToString());
+
+        GetTree().Root.AddChild(termUI);
+        GetTree().Root.RemoveChild(GetTree().Root.GetChild(0));
+        //this.Free();
+    }
 
     ///Main Group//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -181,17 +253,29 @@ public partial class SelectTermUI : Control
     /// </summary>
     public override void _Ready()
 	{
-        termListBoxClear();
-        openButton.Pressed += openFolderDialog;
-        createButton.Pressed += createFolderDialog;
-        GD.Print("Ready!");
+        //Can't be bothered to find a
+        Error error = termLocationConfigFile.Load("user://termLocationList.cfg");
+
+        if(error == Error.Ok)
+        {
+            foreach (String path in termLocationConfigFile.GetSections())
+            {
+                // Fetch the data for each section.
+                //ADD CATCH IF FILE HAS BEEN DELETED
+                AddNewTerm((String)termLocationConfigFile.GetValue(path, "List"), false, false);
+            }
+        }
+
+        UpdateTermListBox();
+        openButton.Pressed += OpenExistingTermDialog;
+        createButton.Pressed += CreateNewTermDialog;
+        termListTree.CellSelected += OpenTermUI;
     }
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
 	}
-
 }
 
 
@@ -199,7 +283,7 @@ public partial class SelectTermUI : Control
 /// <summary>
 /// Class to save the file.
 /// </summary>
-public class TermLocationData {
+public class TermDetails {
 	public DateTime lastModifiedDate;
 	public string termName;
     public string termFilePath;

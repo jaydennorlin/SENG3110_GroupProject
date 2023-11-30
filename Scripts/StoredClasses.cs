@@ -20,6 +20,8 @@ namespace AssignmentTracker {
         {
             string jsonString = JsonSerializer.Serialize(this);
 
+            GD.Print("Serialied " + termName + " to " + jsonString);
+
             File.WriteAllText(directory, jsonString);
         }
 

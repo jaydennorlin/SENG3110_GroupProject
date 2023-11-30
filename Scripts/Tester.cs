@@ -20,6 +20,7 @@ public partial class Tester : Node
     [Export] Tree coursesTree;
     TreeItem coursesTreeRoot;
     [Export] Button editTermButton;
+    [Export] Button saveTermButton;
 
     [ExportGroup("Term Editor Fields")]
     [Export] TextEdit termNameEdit;
@@ -67,7 +68,7 @@ public partial class Tester : Node
     [Export] TextEdit subtaskDescriptionEdit;
 
 
-    Term activeTerm;
+    Term currentTerm;
     int edittingTask = -1;
 
     //Tabs can either be a Course or a Task.
@@ -91,9 +92,9 @@ public partial class Tester : Node
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        #region Generation of Testing Data. 
-        activeTerm = new Term();
-        activeTerm.termName = "Example Term 20XX";
+        /*#region Generation of Testing Data. 
+        currentTerm = new Term();
+        currentTerm.termName = "Example Term 20XX";
 
         Course exampleCourse = new Course("EXCO 1100", "Example data wabababababababababababababababa");
         exampleCourse.tasks.Add(new PrimaryTask("Example Task", exampleCourse));
@@ -104,21 +105,49 @@ public partial class Tester : Node
         exampleCourse.tasks[0].subtasks.Add(new TaskBase("How many eggs isd?", "Quiz"));
         exampleCourse.tasks[0].subtasks.Add(new TaskBase("KIll the birds", "Assignment"));
 
-        activeTerm.courses.Add(exampleCourse);
+        currentTerm.courses.Add(exampleCourse);
 
         exampleCourse = new Course("EXCO 2200", "Example data wibibibibibibibibibibibibibibibi");
         exampleCourse.tasks.Add(new PrimaryTask("Example Task 7", exampleCourse));
         exampleCourse.tasks.Add(new PrimaryTask("Example Task 700", exampleCourse));
         exampleCourse.tasks.Add(new PrimaryTask("Example Mission", exampleCourse));
 
-        activeTerm.courses.Add(exampleCourse);
-        #endregion
-        //Load selected term here
+        currentTerm.courses.Add(exampleCourse);
+        #endregion*/
+
+        
+
+        //Test
+        /*List<TaskBase> alltasks = new List<TaskBase>();
+
+        for (int i = 0; i < activeTerm.courses.Count; i++)
+        {
+            for (int j = 0; j < activeTerm.courses[i].tasks.Count; j++)
+            {
+                alltasks.Add(activeTerm.courses[i].tasks[j]);
+                //Psuedorandom date value.
+                activeTerm.courses[i].tasks[j].dueDate = DateTime.Today.AddDays(Mathf.Sin((float)i * activeTerm.courses.Count + j) * 10.0f);
+            }
+        }
+
+        List<SortExample.TaskPlaceholder> sortedTasks = SortExample.SortTasks(alltasks.ToArray());
+
+        for (int i = 0; i < sortedTasks.Count; i++)
+        {
+            int j = sortedTasks[i].originalIndex;
+            GD.Print(((PrimaryTask)alltasks[j]).taskName + " date " + ((PrimaryTask)alltasks[j]).dueDate.ToString());
+        }*/
+    }
+
+    public void Setup(Term term)
+    {
+        currentTerm = term;
 
         //Formatting makes it larger, bold, and centered.
-        termNameLabel.Text = "[font_size=20][b][center]" + activeTerm.termName;
+        termNameLabel.Text = "[font_size=20][b][center]" + currentTerm.termName;
 
         editTermButton.Pressed += EditTerm_OpenEditor;
+        saveTermButton.Pressed += SaveTerm;
         termEditConfirm.Pressed += EditTerm_Confirm;
         termEditCancel.Pressed += EditTerm_Cancel;
 
@@ -130,9 +159,9 @@ public partial class Tester : Node
 
         createCourseButton.Pressed += CreateNewCourse;
 
-        for (int i = 0; i < activeTerm.courses.Count; i++)
+        for (int i = 0; i < currentTerm.courses.Count; i++)
         {
-            AddCourseToTree(activeTerm.courses[i]);
+            AddCourseToTree(currentTerm.courses[i]);
         }
 
         //Primary/Generic Events
@@ -171,27 +200,6 @@ public partial class Tester : Node
         //Final Initialization.
         UpdateSecondaryDisplay(0);
         UpdateOpenTabs();
-
-        //Test
-        /*List<TaskBase> alltasks = new List<TaskBase>();
-
-        for (int i = 0; i < activeTerm.courses.Count; i++)
-        {
-            for (int j = 0; j < activeTerm.courses[i].tasks.Count; j++)
-            {
-                alltasks.Add(activeTerm.courses[i].tasks[j]);
-                //Psuedorandom date value.
-                activeTerm.courses[i].tasks[j].dueDate = DateTime.Today.AddDays(Mathf.Sin((float)i * activeTerm.courses.Count + j) * 10.0f);
-            }
-        }
-
-        List<SortExample.TaskPlaceholder> sortedTasks = SortExample.SortTasks(alltasks.ToArray());
-
-        for (int i = 0; i < sortedTasks.Count; i++)
-        {
-            int j = sortedTasks[i].originalIndex;
-            GD.Print(((PrimaryTask)alltasks[j]).taskName + " date " + ((PrimaryTask)alltasks[j]).dueDate.ToString());
-        }*/
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -219,9 +227,9 @@ public partial class Tester : Node
         //Disposed by the above method, but not immediately null.
         coursesTreeRoot = null;
 
-        for (int i = 0; i < activeTerm.courses.Count; i++)
+        for (int i = 0; i < currentTerm.courses.Count; i++)
         {
-            AddCourseToTree(activeTerm.courses[i]);
+            AddCourseToTree(currentTerm.courses[i]);
         }
 
         /*for (int i = 0; i < activeTerm.courses.Count; i++)
@@ -277,11 +285,11 @@ public partial class Tester : Node
             //Courses are childed to the root of the tree, so the selected TreeItem must be a course.
             if (selecteditem.GetParent() == coursesTreeRoot)
             {
-                AddCourseTab(activeTerm.courses[selecteditem.GetIndex()]);
+                AddCourseTab(currentTerm.courses[selecteditem.GetIndex()]);
             }
             else
             {
-                AddTaskTab(activeTerm.courses[selecteditem.GetParent().GetIndex()].tasks[selecteditem.GetIndex()]);
+                AddTaskTab(currentTerm.courses[selecteditem.GetParent().GetIndex()].tasks[selecteditem.GetIndex()]);
             }
         }
     }
@@ -449,7 +457,7 @@ public partial class Tester : Node
         //No other initial data needed?
         newCourse.courseName = "New Course";
 
-        activeTerm.courses.Add(newCourse);
+        currentTerm.courses.Add(newCourse);
         AddCourseToTree(newCourse, true);
         AddTab();
     }
@@ -510,7 +518,7 @@ public partial class Tester : Node
             }
         }
 
-        activeTerm.courses.Remove(toBeRemoved);
+        currentTerm.courses.Remove(toBeRemoved);
 
         UpdateOpenTabs();
         UpdateTree();
@@ -843,19 +851,25 @@ public partial class Tester : Node
     #endregion
 
     #region Term Editor
+    //Not actually part of the term editor but this seems like a good place to put this.
+    void SaveTerm()
+    {
+        currentTerm.SaveTerm();
+    }
+
     void EditTerm_OpenEditor()
     {
-        termNameEdit.Text = activeTerm.termName;
+        termNameEdit.Text = currentTerm.termName;
 
         EditTerm_UpdateDateOptions();
 
-        termStartMonthOption.Selected = activeTerm.startDate.Month - 1;
-        termStartYearSpinbox.Value = activeTerm.startDate.Year;
-        termStartDayOption.Selected = activeTerm.startDate.Day - 1;
+        termStartMonthOption.Selected = currentTerm.startDate.Month - 1;
+        termStartYearSpinbox.Value = currentTerm.startDate.Year;
+        termStartDayOption.Selected = currentTerm.startDate.Day - 1;
 
-        termEndMonthOption.Selected = activeTerm.endDate.Month - 1;
-        termEndYearSpinbox.Value = activeTerm.endDate.Year;
-        termEndDayOption.Selected = activeTerm.endDate.Day - 1;
+        termEndMonthOption.Selected = currentTerm.endDate.Month - 1;
+        termEndYearSpinbox.Value = currentTerm.endDate.Year;
+        termEndDayOption.Selected = currentTerm.endDate.Day - 1;
 
         mainEditor.Hide();
         termEditor.Show();
@@ -863,8 +877,8 @@ public partial class Tester : Node
 
     void EditTerm_UpdateDateOptions()
     {
-        UpdateDateOptions(activeTerm.startDate.Month, activeTerm.startDate.Year, termStartDayOption);
-        UpdateDateOptions(activeTerm.endDate.Month, activeTerm.endDate.Year, termEndDayOption);
+        UpdateDateOptions(currentTerm.startDate.Month, currentTerm.startDate.Year, termStartDayOption);
+        UpdateDateOptions(currentTerm.endDate.Month, currentTerm.endDate.Year, termEndDayOption);
     }
 
     //Necessary to have the unused argument so it can be called by an event.
@@ -885,11 +899,11 @@ public partial class Tester : Node
 
     void EditTerm_Confirm()
     {
-        activeTerm.termName = termNameEdit.Text;
-        termNameLabel.Text = "[font_size=20][b][center]" + activeTerm.termName;
+        currentTerm.termName = termNameEdit.Text;
+        termNameLabel.Text = "[font_size=20][b][center]" + currentTerm.termName;
 
-        activeTerm.startDate = new DateTime((int)termStartYearSpinbox.Value, termStartMonthOption.Selected + 1, termStartDayOption.Selected + 1);
-        activeTerm.startDate = new DateTime((int)termEndYearSpinbox.Value, termEndMonthOption.Selected + 1, termEndDayOption.Selected + 1);
+        currentTerm.startDate = new DateTime((int)termStartYearSpinbox.Value, termStartMonthOption.Selected + 1, termStartDayOption.Selected + 1);
+        currentTerm.startDate = new DateTime((int)termEndYearSpinbox.Value, termEndMonthOption.Selected + 1, termEndDayOption.Selected + 1);
 
         mainEditor.Show();
         termEditor.Hide();

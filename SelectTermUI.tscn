@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Scripts/SelectTermUI.cs" id="1_2isdf"]
 [ext_resource type="Texture2D" uid="uid://5qn54b4qg5jn" path="res://icon.svg" id="1_pd5da"]
 
-[node name="SelectTermUI" type="Control" node_paths=PackedStringArray("createButton", "openButton", "termListBox")]
+[node name="SelectTermUI" type="Control" node_paths=PackedStringArray("createButton", "openButton", "termListTree")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,7 +13,7 @@ grow_vertical = 2
 script = ExtResource("1_2isdf")
 createButton = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer/Button_CreateTermFolder")
 openButton = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer/Button_OpenTermFolder2")
-termListBox = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/ScrollContainer_SelectTerm/VBoxContainer")
+termListTree = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/ScrollContainer_SelectTerm/Tree")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -44,24 +44,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 vertical_scroll_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/ScrollContainer_SelectTerm"]
+[node name="Tree" type="Tree" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/ScrollContainer_SelectTerm"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-
-[node name="ExampleButton" type="Button" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/ScrollContainer_SelectTerm/VBoxContainer"]
-layout_mode = 2
-text = "Example Open Term
-//File Location
-"
-alignment = 0
-
-[node name="ExampleButton2" type="Button" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/ScrollContainer_SelectTerm/VBoxContainer"]
-layout_mode = 2
-text = "Example Open Term
-//File Location
-"
-alignment = 0
+allow_reselect = true
+hide_root = true
 
 [node name="Control" type="Control" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer"]
 layout_mode = 2
@@ -86,8 +74,8 @@ stretch_mode = 3
 
 [node name="Button_CreateTermFolder" type="Button" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
-text = "Create Term Folder"
+text = "Create new Term"
 
 [node name="Button_OpenTermFolder2" type="Button" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
-text = "Open Existing Term Folder"
+text = "Open existing Term File"
