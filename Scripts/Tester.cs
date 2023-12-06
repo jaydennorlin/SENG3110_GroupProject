@@ -53,6 +53,7 @@ public partial class Tester : Node
     [Export] OptionButton taskMonthOption;
     [Export] OptionButton taskDayOption;
     [Export] SpinBox taskYearSpinbox;
+    [Export] Button taskOpenOnCalendar;
     [Export] TextEdit taskDescriptionArea;
     [Export] Button createSubtaskButton;
     [Export] Tree subtaskTree;
@@ -194,10 +195,12 @@ public partial class Tester : Node
         taskMonthOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Month;
         taskDayOption.ItemSelected += PrimaryDisplay_UpdateDueDate_Day;
         taskYearSpinbox.ValueChanged += PrimaryDisplay_UpdateDueDate_Year;
+        taskOpenOnCalendar.Pressed += Task_OpenOnCalendar;
         taskDescriptionArea.TextChanged += Task_UpdateDescription;
         createSubtaskButton.Pressed += CreateSubtask;
         subtaskTree.CellSelected += SubtaskEdit_Update;
         deleteTaskButton.Pressed += Task_DeleteConfirmPopup;
+
 
         //Secondary Display Events
         secondaryTabBar.TabChanged += UpdateSecondaryDisplay;
@@ -696,6 +699,13 @@ public partial class Tester : Node
         //Adjusting the current tab and forcing the SubtaskEdit tab to be redrawn, removing a subtask if it's connected to this task.
         secondaryTabBar.CurrentTab = 0;
         SubtaskEdit_Update(true);
+    }
+
+    //Unimplemented. Only switches to Calendar tab, currently
+    void Task_OpenOnCalendar()
+    {
+        secondaryTabBar.CurrentTab = 0;
+        UpdateSecondaryDisplay(0);
     }
 
     private void PrimaryDisplay_SetTime(DateTime time)

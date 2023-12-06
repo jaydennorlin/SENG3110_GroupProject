@@ -202,21 +202,74 @@ public partial class SelectTermUI : Control
                 else if (selectedItem.GetIndex() == 1)
                 {
                     //Remove from List
-                    termPathList.RemoveAt(selectedItem.GetParent().GetIndex());
+                    RemoveFromListConfirmPopup();
                 }
                 else
                 {
                     //Remove from Disk
                     //ADD CONFIRMATION DIALOGUE TO THIS
-                    File.Delete(termPathList[selectedItem.GetParent().GetIndex()]);
-                    termPathList.RemoveAt(selectedItem.GetParent().GetIndex());
+                    DeleteConfirmPopup();
                 }
             }
-
-            selectedItem = null;
-
-            UpdateConfigFromTermPathList();
-            UpdateTermTree();
         }
+    }
+
+    private void RemoveFromListConfirmPopup()
+    {
+        TreeItem selectedItem = termTree.GetSelected();
+
+        ConfirmationDialog dialog = new ConfirmationDialog();
+        AddChild(dialog);
+
+        dialog.Confirmed += RemoveFromList;
+
+        //Consider finding some way of avoiding this. Investigate Obsidian/System Trash method, and file structure serializaliation.
+        dialog.Title = "Deletion Confirmation";
+        dialog.DialogText = selectedItem.GetParent().GetText(0) + " will be removed from this list, but will remain on your local disk. \nAre you sure you want to continue?";
+        dialog.Position = (Vector2I)(this.Size * 0.5f) - (dialog.Size / 2);
+
+        dialog.Popup();
+    }
+
+    void RemoveFromList()
+    {
+        TreeItem selectedItem = termTree.GetSelected();
+
+        termPathList.RemoveAt(selectedItem.GetParent().GetIndex());
+
+        selectedItem = null;
+
+        UpdateConfigFromTermPathList();
+        UpdateTermTree();
+    }
+
+    private void DeleteConfirmPopup()
+    {
+        TreeItem selectedItem = termTree.GetSelected();
+
+        ConfirmationDialog dialog = new ConfirmationDialog();
+        AddChild(dialog);
+
+        dialog.Confirmed += DeleteTerm;
+
+        //Consider finding some way of avoiding this. Investigate Obsidian/System Trash method, and file structure serializaliation.
+        dialog.Title = "Deletion Confirmation";
+        dialog.DialogText = selectedItem.GetParent().GetText(0) + " will be PERMANENTLY DELETED. \nAre you sure you want to continue?";
+        dialog.Position = (Vector2I)(this.Size * 0.5f) - (dialog.Size / 2);
+
+        dialog.Popup();
+    }
+
+    void DeleteTerm()
+    {
+        TreeItem selectedItem = termTree.GetSelected();
+
+        File.Delete(termPathList[selectedItem.GetParent().GetIndex()]);
+        termPathList.RemoveAt(selectedItem.GetParent().GetIndex());
+
+        selectedItem = null;
+
+        UpdateConfigFromTermPathList();
+        UpdateTermTree();
     }
 }

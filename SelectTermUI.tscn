@@ -15,6 +15,11 @@ AddExistingTermButton = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxC
 CreateNewTermButton = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer/Button_CreateTermFolder")
 termTree = NodePath("CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/ScrollContainer_SelectTerm/Tree")
 
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="LayoutScaler" type="Control" parent="CanvasLayer"]
@@ -68,9 +73,18 @@ grow_vertical = 2
 layout_mode = 2
 
 [node name="TextureRect" type="TextureRect" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(256, 200)
 layout_mode = 2
 texture = ExtResource("1_pd5da")
-stretch_mode = 3
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer"]
+layout_mode = 2
+bbcode_enabled = true
+text = "[center][font_size=32]Assignment Tracker[/font_size]
+[i]SENG 3130 Final Project"
+fit_content = true
 
 [node name="Button_CreateTermFolder" type="Button" parent="CanvasLayer/LayoutScaler/ScrollContainer/HBoxContainer/Control/CenterContainer/VBoxContainer"]
 layout_mode = 2
